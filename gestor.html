@@ -1,0 +1,1558 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Docente — Economía (5.° año)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --radius: 10px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    /* Header */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header-title h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .header-title p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* Pipeline / Progress bar */
+    .pipeline-bar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      background: var(--bg);
+      padding: 0.4rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+    .step-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #e2e8f0;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .step-pill.active {
+      background: var(--primary);
+      color: white;
+    }
+    .step-pill.completed {
+      background: var(--success);
+      color: white;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Navigation Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-btn .badge {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.85rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-borrador {
+      background: var(--warning-light);
+      color: var(--warning);
+      border: 1px solid #fde68a;
+    }
+    .badge-aprobado {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+    .badge-bloqueado {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Callout & Prompt helper */
+    .callout {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .callout.warning {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+    .callout.info {
+      background: #f0f9ff;
+      border-color: #bae6fd;
+    }
+    .callout.locked {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      color: #64748b;
+    }
+    .command-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #1e293b;
+      color: #38bdf8;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: all;
+    }
+    .command-box:hover {
+      background: #0f172a;
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      color: var(--text);
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.65rem 1.25rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #15803d; }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-outline { background: white; border: 1px solid var(--border); color: #334155; }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #b45309; }
+
+    /* Markdown Document Viewer */
+    .document-viewer {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #1e293b;
+    }
+    .document-viewer h1 { font-size: 1.55rem; margin-top: 1.4rem; margin-bottom: 0.75rem; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3rem; }
+    .document-viewer h2 { font-size: 1.28rem; margin-top: 1.3rem; margin-bottom: 0.6rem; color: #0f172a; }
+    .document-viewer h3 { font-size: 1.08rem; margin-top: 1rem; margin-bottom: 0.4rem; color: #334155; }
+    .document-viewer p { margin-bottom: 0.9rem; }
+    .document-viewer ul, .document-viewer ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+    .document-viewer li { margin-bottom: 0.35rem; }
+    .document-viewer hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
+    .document-viewer blockquote {
+      border-left: 4px solid var(--primary);
+      color: #334155;
+      margin: 1rem 0;
+      background: #f0f9ff;
+      padding: 0.75rem 1rem;
+      border-radius: 0 6px 6px 0;
+    }
+    .document-viewer table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.1rem 0;
+      background: white;
+      font-size: 0.92rem;
+    }
+    .document-viewer th, .document-viewer td {
+      border: 1px solid #cbd5e1;
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .document-viewer th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
+
+    /* Special Tags inside documents */
+    .tag-ficticio {
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      margin-left: 0.25rem;
+      border: 1px solid #c7d2fe;
+      display: inline-block;
+    }
+    .tag-verificar {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      margin-left: 0.25rem;
+      border: 1px solid #fde68a;
+      display: inline-block;
+    }
+
+    /* Print styles */
+    @media print {
+      header, .tabs, .pipeline-bar, .card-header .btn, .callout, .no-print {
+        display: none !important;
+      }
+      body { background: white; padding: 0; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .card { border: none; box-shadow: none; padding: 0; }
+      .document-viewer { background: white; border: none; padding: 0; }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #0f172a;
+      color: white;
+      padding: 0.85rem 1.35rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.25);
+      font-size: 0.92rem;
+      font-weight: 600;
+      display: none;
+      z-index: 999;
+      animation: fadeIn 0.25s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Mensaje</div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Panel de Gestión de Agentes · Economía (5.° año)</h1>
+        <p>Herramienta docente para diseño de casos, guías de aula y dinámicas pedagógicas</p>
+      </div>
+
+      <!-- Pipeline Status & Diapositivas -->
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <div class="pipeline-bar" id="pipelineBar">
+          <div class="step-pill" id="pillPedido" onclick="switchTab('tab-pedido')">📝 1. Pedido</div>
+          <div class="step-pill" id="pillPedagogo" onclick="switchTab('tab-pedagogo')">🎓 2. Pedagogo</div>
+          <div class="step-pill" id="pillDisenador" onclick="switchTab('tab-disenador')">📐 3. Diseñador</div>
+          <div class="step-pill" id="pillGamificador" onclick="switchTab('tab-gamificador')">🎲 4. Gamificador</div>
+        </div>
+        <a href="diapositivas.html" target="_blank" class="btn btn-outline" style="text-decoration:none; font-size:0.85rem; padding:0.45rem 0.85rem; border-color:#cbd5e1; color:#0369a1; font-weight:700;">
+          📊 Ver Diapositivas
+        </a>
+        <a href="index.html" class="btn btn-outline" style="text-decoration:none; font-size:0.85rem; padding:0.45rem 0.85rem; border-color:#cbd5e1; color:#334155; font-weight:600;">
+          🏠 Portal / Memorias
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-pedido')">📝 1. Pedido Inicial</button>
+      <button class="tab-btn" onclick="switchTab('tab-pedagogo')">
+        🎓 2. Caso (Pedagogo)
+        <span id="tabBadgePedagogo" class="badge badge-borrador">Borrador</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-disenador')">
+        📐 3. Guía de Aula (Diseñador)
+        <span id="tabBadgeDisenador" class="badge badge-bloqueado">Bloqueado</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-gamificador')">
+        🎲 4. Dinámicas (Gamificador)
+        <span id="tabBadgeGamificador" class="badge badge-bloqueado">Bloqueado</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-imprimir')">🖨️ 5. Vista de Impresión</button>
+    </nav>
+
+    <!-- TAB 1: PEDIDO -->
+    <section id="tab-pedido" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 1. Configurar el Pedido de Clase</div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="guardarPedido()">💾 Solo Guardar Pedido</button>
+            <button id="btnGenerarDesdePedido" class="btn btn-success" onclick="generarAgente('pedagogo', true)">
+              ✨ Guardar y Generar Caso (Agente 1)
+            </button>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <div style="flex:1; min-width:260px;">
+            <strong>¿Cómo funciona?</strong> Elegí la <strong>Unidad</strong> y el <strong>Tema específico</strong> en los desplegables de abajo y tocá el botón verde <strong>"✨ Guardar y Generar Caso (Agente 1)"</strong> para producir el caso aquí mismo, o bien copiá el comando <code>/1-pedagogo</code> en el chat de Antigravity.
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="generarAgente('pedagogo', true)">
+              🚀 Generar Caso Ahora
+            </button>
+            <div class="command-box" onclick="copiarTexto('/1-pedagogo')" title="Opcional: copiar comando para el chat">
+              📋 /1-pedagogo
+            </div>
+          </div>
+        </div>
+
+        <form id="formPedido" class="form-grid" onsubmit="event.preventDefault(); generarAgente('pedagogo', true);">
+          <div class="form-group">
+            <label for="inputUnidad">1. Unidad de la Planificación:</label>
+            <select id="inputUnidad" onchange="onCambioUnidad()">
+              <option value="">Seleccionar unidad...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputTemaEspecifico">2. Tema específico de la Unidad:</label>
+            <select id="inputTemaEspecifico" onchange="onCambioTemaEspecifico()">
+              <option value="">Seleccionar tema específico...</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="inputUnidadTema">Síntesis de Unidad y Tema específico (se completa solo al elegir arriba, o podés editarlo):</label>
+            <input type="text" id="inputUnidadTema" required placeholder="Ej: Unidad 1 — Teoría de la demanda y Elasticidad precio e ingreso de la demanda">
+          </div>
+
+          <div class="form-group">
+            <label for="inputCurso">Curso y Grupo:</label>
+            <input type="text" id="inputCurso" placeholder="5.º año, orientación Economía. Ritmos heterogéneos">
+          </div>
+
+          <div class="form-group">
+            <label for="inputTiempo">Tiempo disponible:</label>
+            <input type="text" id="inputTiempo" placeholder="1 clase de 80 minutos">
+          </div>
+
+          <div class="form-group">
+            <label for="inputModalidad">Modalidad de trabajo:</label>
+            <input type="text" id="inputModalidad" placeholder="Trabajo en grupos de 4">
+          </div>
+
+          <div class="form-group">
+            <label for="inputRestricciones">Restricciones de aula / recursos:</label>
+            <input type="text" id="inputRestricciones" placeholder="Sin computadoras en el aula; hay proyector">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="inputCuesta">¿Qué te cuesta hoy con este tema? (Dificultad didáctica a resolver):</label>
+            <textarea id="inputCuesta" placeholder="Los ejercicios del manual usan ejemplos lejanos y los chicos resuelven de memoria sin comprender el concepto"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="inputEvitar">Algo que quieras evitar expresamente:</label>
+            <input type="text" id="inputEvitar" placeholder="Ejemplos con marcas reales o con cifras que no pueda verificar">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="inputObservaciones">Observaciones pedagógicas adicionales (opcional):</label>
+            <input type="text" id="inputObservaciones" placeholder="Preferir ejemplos de consumo adolescente, comercios barriales o noticias argentinas">
+          </div>
+
+          <div class="form-group full-width" style="display:flex; flex-direction:row; justify-content:flex-end; gap:0.75rem; margin-top:0.5rem; padding-top:1rem; border-top:1px solid var(--border);">
+            <button type="button" class="btn btn-outline" onclick="guardarPedido()">💾 Solo Guardar Pedido</button>
+            <button type="submit" class="btn btn-success">✨ Guardar y Generar Caso (Agente 1 · Pedagogo)</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 2: PEDAGOGO -->
+    <section id="tab-pedagogo" class="tab-pane" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              🎓 Caso Contextualizado (Agente 1 · Pedagogo / Casista)
+              <span id="badgeEstadoPedagogo" class="badge badge-borrador">Borrador</span>
+            </div>
+            <small id="subInfoPedagogo" style="color:var(--text-muted);"></small>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="generarAgente('pedagogo', false)" title="Volver a generar el caso con los datos del Pedido">
+              🔄 Regenerar Caso
+            </button>
+            <button id="btnAprobarPedagogo" class="btn btn-success" onclick="toggleAprobacion('pedagogo')">
+              ✓ Aprobar Caso
+            </button>
+            <button class="btn btn-outline" onclick="toggleEditar('pedagogo')">
+              ✏️ Modo Edición
+            </button>
+            <button id="btnGuardarEdicionPedagogo" class="btn btn-primary" style="display:none;" onclick="guardarEdicion('pedagogo')">
+              💾 Guardar Cambios
+            </button>
+          </div>
+        </div>
+
+        <!-- Callout cuando está en BORRADOR -->
+        <div id="calloutPedagogoBorrador" class="callout warning" style="display:none;">
+          <div>
+            <strong>Revisión docente necesaria:</strong> Este caso está en estado <strong>BORRADOR</strong>. Revisalo (o editalo si querés ajustar algún dato) y tocá el botón verde <strong>"✓ Aprobar Caso"</strong> para habilitar al Agente 2 (Diseñador Didáctico).
+          </div>
+          <button class="btn btn-success" onclick="toggleAprobacion('pedagogo')">
+            ✓ Aprobar Caso ahora
+          </button>
+        </div>
+
+        <!-- Callout cuando está APROBADO -->
+        <div id="calloutPedagogoAprobado" class="callout" style="display:none;">
+          <div style="flex:1; min-width:260px;">
+            <strong>¡Caso Aprobado!</strong> El Agente 2 (Diseñador Didáctico) ya tiene tu visto bueno para transformar este caso en la guía de resolución para los estudiantes.
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="generarAgente('disenador', false)">
+              🚀 Generar Guía de Aula (Agente 2)
+            </button>
+            <div class="command-box" onclick="copiarTexto('/2-disenador')" title="Opcional: copiar comando para el chat">
+              📋 /2-disenador
+            </div>
+          </div>
+        </div>
+
+        <div id="viewerPedagogo" class="document-viewer">
+          <em>Cargando caso...</em>
+        </div>
+
+        <textarea id="editorPedagogo" class="form-group full-width" style="display:none; height:450px; font-family:monospace;"></textarea>
+      </div>
+    </section>
+
+    <!-- TAB 3: DISEÑADOR -->
+    <section id="tab-disenador" class="tab-pane" style="display:none;">
+      <div id="bloqueoDisenador" class="card" style="display:none;">
+        <div class="callout locked">
+          <div>
+            <h3>🔒 Etapa bloqueada: falta aprobar el Caso</h3>
+            <p>Por regla pedagógica del equipo, el Diseñador Didáctico solo trabaja sobre un caso que hayas revisado y marcado como <strong>APROBADO</strong> en el paso anterior.</p>
+          </div>
+          <button class="btn btn-primary" onclick="switchTab('tab-pedagogo')">Ir a revisar y aprobar el Caso</button>
+        </div>
+      </div>
+
+      <div id="sinGenerarDisenador" class="card" style="display:none;">
+        <div class="callout info">
+          <div style="flex:1; min-width:260px;">
+            <h3>✨ El Caso del Pedagogo ya está APROBADO</h3>
+            <p>Hacé clic en el botón para que el <strong>Agente 2 (Diseñador Didáctico)</strong> elabore la Guía para Estudiantes con 3 niveles de andamiaje, criterios de valoración y resolución docente:</p>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="generarAgente('disenador', false)">
+              🚀 Generar Guía de Aula Ahora (Agente 2)
+            </button>
+            <div class="command-box" onclick="copiarTexto('/2-disenador')" title="Opcional: copiar comando para el chat">
+              📋 /2-disenador
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="contenidoDisenador" class="card" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              📐 Guía de Resolución con Andamiaje (Agente 2 · Diseñador Didáctico)
+              <span id="badgeEstadoDisenador" class="badge badge-borrador">Borrador</span>
+            </div>
+            <small id="subInfoDisenador" style="color:var(--text-muted);"></small>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="generarAgente('disenador', false)" title="Volver a generar la guía sobre el caso aprobado">
+              🔄 Regenerar Guía
+            </button>
+            <button id="btnAprobarDisenador" class="btn btn-success" onclick="toggleAprobacion('disenador')">
+              ✓ Aprobar Guía
+            </button>
+            <button class="btn btn-outline" onclick="toggleEditar('disenador')">
+              ✏️ Modo Edición
+            </button>
+            <button id="btnGuardarEdicionDisenador" class="btn btn-primary" style="display:none;" onclick="guardarEdicion('disenador')">
+              💾 Guardar Cambios
+            </button>
+          </div>
+        </div>
+
+        <div id="calloutDisenadorBorrador" class="callout warning" style="display:none;">
+          <div>
+            <strong>Revisión docente necesaria:</strong> Esta guía está en estado <strong>BORRADOR</strong>. Revisá las consignas y niveles de andamiaje, y tocá <strong>"✓ Aprobar Guía"</strong> para habilitar al Agente 3 (Gamificador).
+          </div>
+          <button class="btn btn-success" onclick="toggleAprobacion('disenador')">
+            ✓ Aprobar Guía ahora
+          </button>
+        </div>
+
+        <div id="calloutDisenadorAprobado" class="callout" style="display:none;">
+          <div style="flex:1; min-width:260px;">
+            <strong>¡Guía Aprobada!</strong> Ahora podés generar las 2 dinámicas de aula con el Agente 3 (Gamificador) o pasar a la Vista de Impresión para fotocopiar.
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="generarAgente('gamificador', false)">
+              🚀 Generar Dinámicas (Agente 3)
+            </button>
+            <button class="btn btn-outline" onclick="switchTab('tab-imprimir')">
+              🖨️ Vista de Impresión
+            </button>
+            <div class="command-box" onclick="copiarTexto('/3-gamificador')" title="Opcional: copiar comando para el chat">
+              📋 /3-gamificador
+            </div>
+          </div>
+        </div>
+
+        <div id="viewerDisenador" class="document-viewer">
+          <em>Cargando guía...</em>
+        </div>
+
+        <textarea id="editorDisenador" class="form-group full-width" style="display:none; height:450px; font-family:monospace;"></textarea>
+      </div>
+    </section>
+
+    <!-- TAB 4: GAMIFICADOR -->
+    <section id="tab-gamificador" class="tab-pane" style="display:none;">
+      <div id="bloqueoGamificador" class="card" style="display:none;">
+        <div class="callout locked">
+          <div>
+            <h3>🔒 Etapa bloqueada: falta aprobar la Guía</h3>
+            <p>El Gamificador requiere que la Guía del Diseñador Didáctico esté en estado <strong>APROBADO</strong>.</p>
+          </div>
+          <button class="btn btn-primary" onclick="switchTab('tab-disenador')">Ir a revisar y aprobar la Guía</button>
+        </div>
+      </div>
+
+      <div id="sinGenerarGamificador" class="card" style="display:none;">
+        <div class="callout info">
+          <div style="flex:1; min-width:260px;">
+            <h3>✨ Guía de Aula APROBADA</h3>
+            <p>Hacé clic en el botón para que el <strong>Agente 3 (Gamificador / Dinamizador)</strong> diseñe 2 dinámicas participativas y juegos de roles adaptados a este caso y a tu grupo:</p>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="generarAgente('gamificador', false)">
+              🚀 Generar 2 Dinámicas de Aula Ahora (Agente 3)
+            </button>
+            <div class="command-box" onclick="copiarTexto('/3-gamificador')" title="Opcional: copiar comando para el chat">
+              📋 /3-gamificador
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="contenidoGamificador" class="card" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              🎲 Dinámicas de Aula y Simulaciones (Agente 3 · Gamificador)
+              <span class="badge badge-aprobado">Listo</span>
+            </div>
+            <small id="subInfoGamificador" style="color:var(--text-muted);"></small>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="generarAgente('gamificador', false)">
+              🔄 Regenerar Dinámicas
+            </button>
+            <button class="btn btn-outline" onclick="toggleEditar('gamificador')">
+              ✏️ Modo Edición
+            </button>
+            <button id="btnGuardarEdicionGamificador" class="btn btn-primary" style="display:none;" onclick="guardarEdicion('gamificador')">
+              💾 Guardar Cambios
+            </button>
+            <button class="btn btn-primary" onclick="switchTab('tab-imprimir')">
+              🖨️ Ir a Imprimir / PDF
+            </button>
+          </div>
+        </div>
+
+        <div id="viewerGamificador" class="document-viewer">
+          <em>Cargando dinámicas...</em>
+        </div>
+
+        <textarea id="editorGamificador" class="form-group full-width" style="display:none; height:450px; font-family:monospace;"></textarea>
+      </div>
+    </section>
+
+    <!-- TAB 5: IMPRESIÓN -->
+    <section id="tab-imprimir" class="tab-pane" style="display:none;">
+      <div class="card no-print">
+        <div class="card-header">
+          <div class="card-title">🖨️ Vista para Fotocopiar o Guardar en PDF</div>
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+            <select id="selectModoImpresion" onchange="actualizarVistaImpresion()" style="width:auto; min-width:260px;">
+              <option value="estudiantes">📄 Guía para Estudiantes (sin respuestas docentes)</option>
+              <option value="disenador_completo">📐 Guía Completa + Clave de Corrección Docente</option>
+              <option value="pedagogo">🎓 Caso y Ficha Pedagógica (Agente 1)</option>
+              <option value="gamificador">🎲 Dinámicas de Aula (Agente 3)</option>
+            </select>
+            <button class="btn btn-primary" onclick="window.print()">
+              🖨️ Imprimir / Guardar en PDF (Ctrl + P)
+            </button>
+          </div>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          Podés elegir en el desplegable si querés imprimir solo la hoja para repartir a los estudiantes (oculta automáticamente la sección "Solo docente") o el documento completo para tu carpeta.
+        </p>
+      </div>
+
+      <!-- Hoja para el alumno / docente -->
+      <div class="card">
+        <div style="border-bottom: 2px solid #000; padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+              <h2 style="font-size:1.4rem; text-transform:uppercase; margin-bottom:0.25rem;">Elementos de Micro y Macroeconomía</h2>
+              <div style="font-weight:600; color:#334155;" id="printUnidadTema">Unidad 1 — Caso de estudio</div>
+            </div>
+            <div style="text-align:right; font-size:0.85rem;">
+              <div>5.º año · Orientación Economía</div>
+              <div>Fecha: ____/____/2026</div>
+            </div>
+          </div>
+          <div style="margin-top:1rem; padding-top:0.5rem; border-top:1px dashed #ccc; font-size:0.85rem; color:#475569;">
+            Estudiante(s): _________________________________________________________________________________
+          </div>
+        </div>
+
+        <div id="printContenido" class="document-viewer">
+          <em>Generando vista previa...</em>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="generador.js"></script>
+  <script>
+    let estadoActual = null;
+    let editando = { pedagogo: false, disenador: false, gamificador: false };
+    let formularioInicializado = false;
+    let modoAutonomo = false; // true cuando corre en GitHub Pages o file:// sin servidor backend
+
+    const STORAGE_KEY = 'tte_economia_5to_estado_v1';
+
+    function construirEstadoAutonomoInicial() {
+      const M = window.MotorEconomia;
+      const unidades = Object.keys(M.UNIDADES_Y_TEMAS);
+      const pedidoParsed = {
+        'Unidad y tema': 'Unidad 1 — La microeconomía. Aspectos generales: Teoría de la demanda y Elasticidad precio e ingreso de la demanda',
+        'Curso y grupo': '5.º año, orientación Economía. Grupo de ritmos heterogéneos',
+        'Tiempo disponible': '1 clase de 80 minutos',
+        'Modalidad': 'trabajo en grupos de 4',
+        'Qué me cuesta hoy': 'los ejercicios del manual usan ejemplos lejanos y los chicos resuelven de memoria',
+        'Restricciones': 'sin computadoras en el aula; hay proyector',
+        'Algo que quiero evitar': 'ejemplos con marcas reales o con cifras que no pueda verificar',
+        'Observaciones': '(opcional)'
+      };
+      const fecha = M.obtenerFechaHoy();
+      const pedFile = `${fecha}_unidad1_elasticidad.md`;
+      const disFile = `${fecha}_unidad1_elasticidad_guia.md`;
+      const gamFile = `${fecha}_unidad1_elasticidad_dinamicas.md`;
+
+      let pedContent = M.generarPedagogo(pedidoParsed).replace(/Estado:\s*BORRADOR/i, 'Estado: APROBADO');
+      let disContent = M.generarDisenador(pedidoParsed, pedFile).replace(/Estado:\s*BORRADOR/i, 'Estado: APROBADO');
+      let gamContent = M.generarGamificador(pedidoParsed, pedFile, disFile);
+
+      return {
+        pedidoParsed,
+        pedagogo: { filename: pedFile, fecha, estado: 'APROBADO', content: pedContent },
+        disenador: { filename: disFile, fecha, estado: 'APROBADO', content: disContent },
+        gamificador: { filename: gamFile, fecha, estado: 'BORRADOR', content: gamContent }
+      };
+    }
+
+    function leerStorageAutonomo() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const inicial = construirEstadoAutonomoInicial();
+      guardarStorageAutonomo(inicial);
+      return inicial;
+    }
+
+    function guardarStorageAutonomo(st) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+      } catch (e) {}
+    }
+
+    function armarEstadoDesdeAutonomo() {
+      const M = window.MotorEconomia;
+      const st = leerStorageAutonomo();
+      const pedAprobado = Boolean(st.pedagogo && st.pedagogo.estado === 'APROBADO');
+      const disAprobado = Boolean(st.disenador && st.disenador.estado === 'APROBADO');
+      return {
+        ok: true,
+        pedido: { raw: '', parsed: st.pedidoParsed },
+        unidades: Object.keys(M.UNIDADES_Y_TEMAS),
+        unidades_temas: M.UNIDADES_Y_TEMAS,
+        pedagogo: {
+          latest: st.pedagogo,
+          aprobado: pedAprobado,
+          archivos: st.pedagogo ? [st.pedagogo] : []
+        },
+        disenador: {
+          latest: st.disenador,
+          aprobado: disAprobado,
+          archivos: st.disenador ? [st.disenador] : [],
+          bloqueado: !pedAprobado
+        },
+        gamificador: {
+          latest: st.gamificador,
+          listo: Boolean(st.gamificador),
+          archivos: st.gamificador ? [st.gamificador] : [],
+          bloqueado: !disAprobado
+        }
+      };
+    }
+
+    // Cargar estado inicial (intenta servidor local; si está en GitHub Pages o file:// usa motor en navegador)
+    async function cargarEstado() {
+      if (!modoAutonomo && window.location.protocol !== 'file:') {
+        try {
+          const res = await fetch('/api/estado');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.ok) {
+              estadoActual = data;
+              actualizarUI();
+              return;
+            }
+          }
+        } catch (err) {
+          // Pasar a modo autónomo
+        }
+      }
+      modoAutonomo = true;
+      estadoActual = armarEstadoDesdeAutonomo();
+      actualizarUI();
+    }
+
+    function poblarTemasEspecificos(unidadElegida, temaPreseleccionado = '') {
+      const selectTema = document.getElementById('inputTemaEspecifico');
+      selectTema.innerHTML = '';
+
+      const mapa = (estadoActual && estadoActual.unidades_temas) ? estadoActual.unidades_temas : {};
+      const temas = mapa[unidadElegida] || [];
+
+      if (temas.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Primero seleccioná una unidad...';
+        selectTema.appendChild(opt);
+        return;
+      }
+
+      temas.forEach((t, idx) => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        if (temaPreseleccionado && temaPreseleccionado.toLowerCase().includes(t.toLowerCase().slice(0, 18))) {
+          opt.selected = true;
+        } else if (!temaPreseleccionado && idx === 0) {
+          opt.selected = true;
+        }
+        selectTema.appendChild(opt);
+      });
+
+      const optCustom = document.createElement('option');
+      optCustom.value = '__custom__';
+      optCustom.textContent = '✏️ Escribir otro tema específico abajo...';
+      selectTema.appendChild(optCustom);
+    }
+
+    function onCambioUnidad() {
+      const selectUnidad = document.getElementById('inputUnidad');
+      const unidad = selectUnidad.value;
+      poblarTemasEspecificos(unidad);
+      actualizarCampoSintesis();
+    }
+
+    function onCambioTemaEspecifico() {
+      const selectTema = document.getElementById('inputTemaEspecifico');
+      const inputSintesis = document.getElementById('inputUnidadTema');
+      if (selectTema.value === '__custom__') {
+        const unidad = document.getElementById('inputUnidad').value;
+        inputSintesis.value = unidad ? `${unidad}: ` : '';
+        inputSintesis.focus();
+      } else {
+        actualizarCampoSintesis();
+      }
+    }
+
+    function actualizarCampoSintesis() {
+      const unidad = document.getElementById('inputUnidad').value;
+      const tema = document.getElementById('inputTemaEspecifico').value;
+      const inputSintesis = document.getElementById('inputUnidadTema');
+      if (unidad && tema && tema !== '__custom__') {
+        inputSintesis.value = `${unidad}: ${tema}`;
+      } else if (unidad) {
+        inputSintesis.value = unidad;
+      }
+    }
+
+    function inicializarFormularioPedido() {
+      if (!estadoActual) return;
+      const selectUnidades = document.getElementById('inputUnidad');
+      if (selectUnidades.options.length <= 1) {
+        (estadoActual.unidades || []).forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u;
+          opt.textContent = u;
+          selectUnidades.appendChild(opt);
+        });
+      }
+
+      if (!formularioInicializado) {
+        const p = estadoActual.pedido.parsed || {};
+        const unidadTemaGuardado = p['Unidad y tema'] || '';
+
+        // Detectar a qué unidad pertenece el texto guardado
+        let unidadDetectada = (estadoActual.unidades || [])[1] || '';
+        for (const u of (estadoActual.unidades || [])) {
+          const prefijo = u.split('—')[0].trim();
+          if (unidadTemaGuardado.toLowerCase().includes(prefijo.toLowerCase())) {
+            unidadDetectada = u;
+            break;
+          }
+        }
+        selectUnidades.value = unidadDetectada;
+        poblarTemasEspecificos(unidadDetectada, unidadTemaGuardado);
+
+        if (unidadTemaGuardado) {
+          document.getElementById('inputUnidadTema').value = unidadTemaGuardado;
+        } else {
+          actualizarCampoSintesis();
+        }
+
+        if (p['Curso y grupo']) document.getElementById('inputCurso').value = p['Curso y grupo'];
+        if (p['Tiempo disponible']) document.getElementById('inputTiempo').value = p['Tiempo disponible'];
+        if (p['Modalidad']) document.getElementById('inputModalidad').value = p['Modalidad'];
+        if (p['Qué me cuesta hoy']) document.getElementById('inputCuesta').value = p['Qué me cuesta hoy'];
+        if (p['Restricciones']) document.getElementById('inputRestricciones').value = p['Restricciones'];
+        if (p['Algo que quiero evitar']) document.getElementById('inputEvitar').value = p['Algo que quiero evitar'];
+        if (p['Observaciones'] && p['Observaciones'] !== '(opcional)') {
+          document.getElementById('inputObservaciones').value = p['Observaciones'];
+        }
+        formularioInicializado = true;
+      }
+    }
+
+    function obtenerPayloadFormulario() {
+      return {
+        unidad_tema: document.getElementById('inputUnidadTema').value,
+        curso_grupo: document.getElementById('inputCurso').value,
+        tiempo: document.getElementById('inputTiempo').value,
+        modalidad: document.getElementById('inputModalidad').value,
+        cuesta_hoy: document.getElementById('inputCuesta').value,
+        restricciones: document.getElementById('inputRestricciones').value,
+        evitar: document.getElementById('inputEvitar').value,
+        observaciones: document.getElementById('inputObservaciones').value
+      };
+    }
+
+    function actualizarUI() {
+      if (!estadoActual) return;
+
+      inicializarFormularioPedido();
+
+      // Pipeline Pills y Badges
+      const ped = estadoActual.pedagogo;
+      const dis = estadoActual.disenador;
+      const gam = estadoActual.gamificador;
+
+      document.getElementById('pillPedido').className = 'step-pill completed';
+
+      // Pedagogo
+      if (ped.latest) {
+        const aprobado = ped.latest.estado === 'APROBADO';
+        document.getElementById('tabBadgePedagogo').textContent = ped.latest.estado;
+        document.getElementById('tabBadgePedagogo').className = 'badge ' + (aprobado ? 'badge-aprobado' : 'badge-borrador');
+        document.getElementById('badgeEstadoPedagogo').textContent = ped.latest.estado;
+        document.getElementById('badgeEstadoPedagogo').className = 'badge ' + (aprobado ? 'badge-aprobado' : 'badge-borrador');
+        document.getElementById('subInfoPedagogo').textContent = `${ped.latest.filename} · ${ped.latest.fecha || ''}`;
+
+        document.getElementById('pillPedagogo').className = 'step-pill ' + (aprobado ? 'completed' : 'active');
+        document.getElementById('calloutPedagogoAprobado').style.display = aprobado ? 'flex' : 'none';
+        document.getElementById('calloutPedagogoBorrador').style.display = aprobado ? 'none' : 'flex';
+        document.getElementById('btnAprobarPedagogo').textContent = aprobado ? '↩ Pasar a Borrador' : '✓ Aprobar Caso';
+        document.getElementById('btnAprobarPedagogo').className = 'btn ' + (aprobado ? 'btn-warning' : 'btn-success');
+
+        if (!editando.pedagogo) {
+          document.getElementById('viewerPedagogo').innerHTML = renderMarkdown(ped.latest.content);
+          document.getElementById('editorPedagogo').value = ped.latest.content;
+        }
+      }
+
+      // Diseñador
+      if (dis.bloqueado) {
+        document.getElementById('bloqueoDisenador').style.display = 'block';
+        document.getElementById('contenidoDisenador').style.display = 'none';
+        document.getElementById('sinGenerarDisenador').style.display = 'none';
+        document.getElementById('tabBadgeDisenador').textContent = 'Bloqueado';
+        document.getElementById('tabBadgeDisenador').className = 'badge badge-bloqueado';
+        document.getElementById('pillDisenador').className = 'step-pill';
+      } else if (!dis.latest) {
+        document.getElementById('bloqueoDisenador').style.display = 'none';
+        document.getElementById('contenidoDisenador').style.display = 'none';
+        document.getElementById('sinGenerarDisenador').style.display = 'block';
+        document.getElementById('tabBadgeDisenador').textContent = 'Listo p/ Generar';
+        document.getElementById('tabBadgeDisenador').className = 'badge badge-borrador';
+        document.getElementById('pillDisenador').className = 'step-pill active';
+      } else {
+        document.getElementById('bloqueoDisenador').style.display = 'none';
+        document.getElementById('sinGenerarDisenador').style.display = 'none';
+        document.getElementById('contenidoDisenador').style.display = 'block';
+
+        const aprobado = dis.latest.estado === 'APROBADO';
+        document.getElementById('tabBadgeDisenador').textContent = dis.latest.estado;
+        document.getElementById('tabBadgeDisenador').className = 'badge ' + (aprobado ? 'badge-aprobado' : 'badge-borrador');
+        document.getElementById('badgeEstadoDisenador').textContent = dis.latest.estado;
+        document.getElementById('badgeEstadoDisenador').className = 'badge ' + (aprobado ? 'badge-aprobado' : 'badge-borrador');
+        document.getElementById('subInfoDisenador').textContent = `${dis.latest.filename} · ${dis.latest.fecha || ''}`;
+
+        document.getElementById('pillDisenador').className = 'step-pill ' + (aprobado ? 'completed' : 'active');
+        document.getElementById('calloutDisenadorAprobado').style.display = aprobado ? 'flex' : 'none';
+        document.getElementById('calloutDisenadorBorrador').style.display = aprobado ? 'none' : 'flex';
+        document.getElementById('btnAprobarDisenador').textContent = aprobado ? '↩ Pasar a Borrador' : '✓ Aprobar Guía';
+        document.getElementById('btnAprobarDisenador').className = 'btn ' + (aprobado ? 'btn-warning' : 'btn-success');
+
+        if (!editando.disenador) {
+          document.getElementById('viewerDisenador').innerHTML = renderMarkdown(dis.latest.content);
+          document.getElementById('editorDisenador').value = dis.latest.content;
+        }
+      }
+
+      // Gamificador
+      if (gam.bloqueado) {
+        document.getElementById('bloqueoGamificador').style.display = 'block';
+        document.getElementById('contenidoGamificador').style.display = 'none';
+        document.getElementById('sinGenerarGamificador').style.display = 'none';
+        document.getElementById('tabBadgeGamificador').textContent = 'Bloqueado';
+        document.getElementById('tabBadgeGamificador').className = 'badge badge-bloqueado';
+        document.getElementById('pillGamificador').className = 'step-pill';
+      } else if (!gam.latest) {
+        document.getElementById('bloqueoGamificador').style.display = 'none';
+        document.getElementById('contenidoGamificador').style.display = 'none';
+        document.getElementById('sinGenerarGamificador').style.display = 'block';
+        document.getElementById('tabBadgeGamificador').textContent = 'Listo p/ Generar';
+        document.getElementById('tabBadgeGamificador').className = 'badge badge-borrador';
+        document.getElementById('pillGamificador').className = 'step-pill active';
+      } else {
+        document.getElementById('bloqueoGamificador').style.display = 'none';
+        document.getElementById('sinGenerarGamificador').style.display = 'none';
+        document.getElementById('contenidoGamificador').style.display = 'block';
+        document.getElementById('tabBadgeGamificador').textContent = 'Listo';
+        document.getElementById('tabBadgeGamificador').className = 'badge badge-aprobado';
+        document.getElementById('pillGamificador').className = 'step-pill completed';
+        document.getElementById('subInfoGamificador').textContent = `${gam.latest.filename} · ${gam.latest.fecha || ''}`;
+
+        if (!editando.gamificador) {
+          document.getElementById('viewerGamificador').innerHTML = renderMarkdown(gam.latest.content);
+          document.getElementById('editorGamificador').value = gam.latest.content;
+        }
+      }
+
+      // Vista de impresión
+      actualizarVistaImpresion();
+    }
+
+    function actualizarVistaImpresion() {
+      if (!estadoActual) return;
+      const tema = estadoActual.pedido.parsed['Unidad y tema'] || 'Economía 5.º año';
+      document.getElementById('printUnidadTema').textContent = tema;
+
+      const modo = (document.getElementById('selectModoImpresion') || {}).value || 'estudiantes';
+
+      if (modo === 'estudiantes') {
+        if (estadoActual.disenador.latest) {
+          // Recortar desde "## 4. Criterios" o "## 5. Solo docente" para que quede solo la hoja del alumno
+          let mdAlumno = estadoActual.disenador.latest.content;
+          const corte = mdAlumno.indexOf('## 4. Criterios de valoración');
+          if (corte !== -1) {
+            mdAlumno = mdAlumno.slice(0, corte);
+          }
+          document.getElementById('printContenido').innerHTML = renderMarkdown(mdAlumno);
+        } else if (estadoActual.pedagogo.latest) {
+          document.getElementById('printContenido').innerHTML = renderMarkdown(estadoActual.pedagogo.latest.content);
+        } else {
+          document.getElementById('printContenido').innerHTML = '<p>Aún no hay material generado para imprimir.</p>';
+        }
+      } else if (modo === 'disenador_completo') {
+        if (estadoActual.disenador.latest) {
+          document.getElementById('printContenido').innerHTML = renderMarkdown(estadoActual.disenador.latest.content);
+        } else {
+          document.getElementById('printContenido').innerHTML = '<p>Aún no se generó la Guía del Diseñador para este caso.</p>';
+        }
+      } else if (modo === 'pedagogo') {
+        if (estadoActual.pedagogo.latest) {
+          document.getElementById('printContenido').innerHTML = renderMarkdown(estadoActual.pedagogo.latest.content);
+        } else {
+          document.getElementById('printContenido').innerHTML = '<p>Aún no se generó el Caso del Pedagogo.</p>';
+        }
+      } else if (modo === 'gamificador') {
+        if (estadoActual.gamificador.latest) {
+          document.getElementById('printContenido').innerHTML = renderMarkdown(estadoActual.gamificador.latest.content);
+        } else {
+          document.getElementById('printContenido').innerHTML = '<p>Aún no se generaron las Dinámicas del Gamificador para esta guía.</p>';
+        }
+      }
+    }
+
+    function convertirPayloadAParsed(payload) {
+      return {
+        'Unidad y tema': payload.unidad_tema || 'Unidad 1 — Elasticidad precio de la demanda',
+        'Curso y grupo': payload.curso_grupo || '5.º año, orientación Economía. Grupo de ritmos heterogéneos',
+        'Tiempo disponible': payload.tiempo || '1 clase de 80 minutos',
+        'Modalidad': payload.modalidad || 'trabajo en grupos de 4',
+        'Qué me cuesta hoy': payload.cuesta_hoy || 'los ejercicios del manual usan ejemplos lejanos',
+        'Restricciones': payload.restricciones || 'sin computadoras en el aula; hay proyector',
+        'Algo que quiero evitar': payload.evitar || 'ejemplos con marcas reales o con cifras que no pueda verificar',
+        'Observaciones': payload.observaciones || '(opcional)'
+      };
+    }
+
+    async function guardarPedido() {
+      const payload = obtenerPayloadFormulario();
+      if (!modoAutonomo) {
+        try {
+          const res = await fetch('/api/pedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok) {
+              mostrarToast('✓ Pedido guardado en entradas/pedido.md');
+              await cargarEstado();
+              return;
+            }
+          }
+        } catch (err) {
+          modoAutonomo = true;
+        }
+      }
+      const st = leerStorageAutonomo();
+      st.pedidoParsed = convertirPayloadAParsed(payload);
+      guardarStorageAutonomo(st);
+      await cargarEstado();
+      mostrarToast('✓ Pedido guardado correctamente');
+    }
+
+    async function generarAgente(agente, incluirPedido = false) {
+      const body = { agente };
+      if (incluirPedido || agente === 'pedagogo') {
+        body.pedido = obtenerPayloadFormulario();
+      }
+
+      mostrarToast(`⏳ Generando propuesta con ${agente.toUpperCase()}...`);
+      if (!modoAutonomo) {
+        try {
+          const res = await fetch('/api/generar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (!data.ok) {
+              mostrarToast('⚠️ ' + (data.error || 'No se pudo generar'));
+              return;
+            }
+            await cargarEstado();
+            mostrarToast(data.message || '✓ Documento generado con éxito');
+            if (agente === 'pedagogo') switchTab('tab-pedagogo');
+            if (agente === 'disenador') switchTab('tab-disenador');
+            if (agente === 'gamificador') switchTab('tab-gamificador');
+            return;
+          }
+        } catch (err) {
+          modoAutonomo = true;
+        }
+      }
+
+      // Modo autónomo (GitHub Pages o apertura directa offline)
+      const M = window.MotorEconomia;
+      const st = leerStorageAutonomo();
+      if (body.pedido) {
+        st.pedidoParsed = convertirPayloadAParsed(body.pedido);
+      }
+      const fecha = M.obtenerFechaHoy();
+      const slug = M.crearSlug(st.pedidoParsed['Unidad y tema'] || 'economia');
+
+      if (agente === 'pedagogo') {
+        const filename = `${fecha}_${slug}.md`;
+        const content = M.generarPedagogo(st.pedidoParsed);
+        st.pedagogo = { filename, fecha, estado: 'BORRADOR', content };
+        st.disenador = null;
+        st.gamificador = null;
+        guardarStorageAutonomo(st);
+        await cargarEstado();
+        mostrarToast('✨ Caso contextualizado generado por el Agente 1 (Pedagogo).');
+        switchTab('tab-pedagogo');
+        return;
+      }
+
+      if (agente === 'disenador') {
+        if (!st.pedagogo || st.pedagogo.estado !== 'APROBADO') {
+          mostrarToast('⚠️ Primero debés aprobar el Caso del Agente 1 (Pedagogo).');
+          return;
+        }
+        const filename = `${fecha}_${slug}_guia.md`;
+        const content = M.generarDisenador(st.pedidoParsed, st.pedagogo.filename);
+        st.disenador = { filename, fecha, estado: 'BORRADOR', content };
+        st.gamificador = null;
+        guardarStorageAutonomo(st);
+        await cargarEstado();
+        mostrarToast('✨ Guía de aula generada por el Agente 2 (Diseñador Didáctico).');
+        switchTab('tab-disenador');
+        return;
+      }
+
+      if (agente === 'gamificador') {
+        if (!st.disenador || st.disenador.estado !== 'APROBADO') {
+          mostrarToast('⚠️ Primero debés aprobar la Guía del Agente 2 (Diseñador).');
+          return;
+        }
+        const filename = `${fecha}_${slug}_dinamicas.md`;
+        const content = M.generarGamificador(st.pedidoParsed, st.pedagogo ? st.pedagogo.filename : 'caso.md', st.disenador.filename);
+        st.gamificador = { filename, fecha, estado: 'BORRADOR', content };
+        guardarStorageAutonomo(st);
+        await cargarEstado();
+        mostrarToast('✨ Dinámicas de aula generadas por el Agente 3 (Gamificador).');
+        switchTab('tab-gamificador');
+        return;
+      }
+    }
+
+    async function toggleAprobacion(agente) {
+      if (!estadoActual) return;
+      const item = estadoActual[agente].latest;
+      if (!item) return;
+
+      const estaAprobado = item.estado === 'APROBADO';
+      const endpoint = estaAprobado ? '/api/desaprobar' : '/api/aprobar';
+
+      if (!modoAutonomo) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ agente, filename: item.filename })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok) {
+              mostrarToast(data.message);
+              await cargarEstado();
+              return;
+            }
+          }
+        } catch (err) {
+          modoAutonomo = true;
+        }
+      }
+
+      const st = leerStorageAutonomo();
+      if (st[agente]) {
+        const nuevoEstado = estaAprobado ? 'BORRADOR' : 'APROBADO';
+        st[agente].estado = nuevoEstado;
+        st[agente].content = st[agente].content.replace(/Estado:\s*(APROBADO|BORRADOR)/i, `Estado: ${nuevoEstado}`);
+        guardarStorageAutonomo(st);
+        mostrarToast(`El archivo ahora está en estado ${nuevoEstado}.`);
+        await cargarEstado();
+      }
+    }
+
+    function toggleEditar(agente) {
+      editando[agente] = !editando[agente];
+      const cap = agente.charAt(0).toUpperCase() + agente.slice(1);
+      const viewer = document.getElementById(`viewer${cap}`);
+      const editor = document.getElementById(`editor${cap}`);
+      const btnGuardar = document.getElementById(`btnGuardarEdicion${cap}`);
+
+      if (editando[agente]) {
+        viewer.style.display = 'none';
+        editor.style.display = 'block';
+        btnGuardar.style.display = 'inline-flex';
+      } else {
+        viewer.style.display = 'block';
+        editor.style.display = 'none';
+        btnGuardar.style.display = 'none';
+      }
+    }
+
+    async function guardarEdicion(agente) {
+      if (!estadoActual) return;
+      const cap = agente.charAt(0).toUpperCase() + agente.slice(1);
+      const filename = estadoActual[agente].latest.filename;
+      const content = document.getElementById(`editor${cap}`).value;
+
+      if (!modoAutonomo) {
+        try {
+          const res = await fetch('/api/guardar-archivo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ agente, filename, content })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok) {
+              mostrarToast('✓ Cambios guardados correctamente');
+              editando[agente] = false;
+              const viewer = document.getElementById(`viewer${cap}`);
+              const editor = document.getElementById(`editor${cap}`);
+              const btnGuardar = document.getElementById(`btnGuardarEdicion${cap}`);
+              viewer.style.display = 'block';
+              editor.style.display = 'none';
+              btnGuardar.style.display = 'none';
+              await cargarEstado();
+              return;
+            }
+          }
+        } catch (err) {
+          modoAutonomo = true;
+        }
+      }
+
+      const st = leerStorageAutonomo();
+      if (st[agente]) {
+        st[agente].content = content;
+        const mEst = content.match(/Estado:\s*(APROBADO|BORRADOR)/i);
+        if (mEst) st[agente].estado = mEst[1].toUpperCase();
+        guardarStorageAutonomo(st);
+      }
+      mostrarToast('✓ Cambios guardados correctamente');
+      editando[agente] = false;
+      const viewer = document.getElementById(`viewer${cap}`);
+      const editor = document.getElementById(`editor${cap}`);
+      const btnGuardar = document.getElementById(`btnGuardarEdicion${cap}`);
+      viewer.style.display = 'block';
+      editor.style.display = 'none';
+      btnGuardar.style.display = 'none';
+      await cargarEstado();
+    }
+
+    function switchTab(tabId) {
+      switchTabById(tabId);
+    }
+
+    function switchTabById(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      const pane = document.getElementById(tabId);
+      if (pane) pane.style.display = 'block';
+      const btn = document.querySelector(`.tab-btn[onclick*="${tabId}"]`);
+      if (btn) btn.classList.add('active');
+    }
+
+    function copiarTexto(texto) {
+      navigator.clipboard.writeText(texto).then(() => {
+        mostrarToast(`📋 Copiado al portapapeles: ${texto}`);
+      }).catch(() => {
+        prompt('Copiá este comando:', texto);
+      });
+    }
+
+    function mostrarToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function formatearInline(str) {
+      return str
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/`\[DATO FICTICIO\]`/g, '<span class="tag-ficticio">[DATO FICTICIO]</span>')
+        .replace(/\[DATO FICTICIO\]/g, '<span class="tag-ficticio">[DATO FICTICIO]</span>')
+        .replace(/`\[VERIFICAR:?([^\]]*)\]`/g, '<span class="tag-verificar">[VERIFICAR$1]</span>')
+        .replace(/\[VERIFICAR:?([^\]]*)\]/g, '<span class="tag-verificar">[VERIFICAR$1]</span>')
+        .replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>')
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+
+    // Parseador Markdown mejorado con soporte de tablas, listas y etiquetas pedagógicas
+    function renderMarkdown(md) {
+      if (!md) return '';
+      const lines = md.split(/\r?\n/);
+      let out = [];
+      let inTable = false;
+      let inList = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const rawLine = lines[i];
+        const trimmed = rawLine.trim();
+
+        // Detectar tablas Markdown
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          const cells = trimmed.slice(1, -1).split('|').map(c => c.trim());
+          // Ignorar fila separadora |---|---|
+          if (cells.every(c => /^[-:\s]+$/.test(c))) {
+            continue;
+          }
+          if (!inTable) {
+            out.push('<table><thead><tr>');
+            cells.forEach(c => out.push(`<th>${formatearInline(c)}</th>`));
+            out.push('</tr></thead><tbody>');
+            inTable = true;
+          } else {
+            out.push('<tr>');
+            cells.forEach(c => out.push(`<td>${formatearInline(c)}</td>`));
+            out.push('</tr>');
+          }
+          continue;
+        } else if (inTable) {
+          out.push('</tbody></table>');
+          inTable = false;
+        }
+
+        // Líneas vacías
+        if (!trimmed) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          continue;
+        }
+
+        // Separador horizontal
+        if (/^---+$/.test(trimmed)) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          out.push('<hr>');
+          continue;
+        }
+
+        // Encabezados
+        if (trimmed.startsWith('### ')) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          out.push(`<h3>${formatearInline(trimmed.slice(4))}</h3>`);
+          continue;
+        }
+        if (trimmed.startsWith('## ')) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          out.push(`<h2>${formatearInline(trimmed.slice(3))}</h2>`);
+          continue;
+        }
+        if (trimmed.startsWith('# ')) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          out.push(`<h1>${formatearInline(trimmed.slice(2))}</h1>`);
+          continue;
+        }
+
+        // Blockquote
+        if (trimmed.startsWith('> ')) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          out.push(`<blockquote>${formatearInline(trimmed.slice(2))}</blockquote>`);
+          continue;
+        }
+
+        // Listas
+        if (/^[-*]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed)) {
+          if (!inList) { out.push('<ul>'); inList = true; }
+          const itemText = trimmed.replace(/^([-*]|\d+\.)\s+/, '');
+          out.push(`<li>${formatearInline(itemText)}</li>`);
+          continue;
+        } else if (inList) {
+          out.push('</ul>');
+          inList = false;
+        }
+
+        out.push(`<p>${formatearInline(trimmed)}</p>`);
+      }
+
+      if (inTable) out.push('</tbody></table>');
+      if (inList) out.push('</ul>');
+      return out.join('\n');
+    }
+
+    // Inicializar al cargar
+    window.addEventListener('DOMContentLoaded', async () => {
+      await cargarEstado();
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        switchTabById(hash);
+      }
+      setInterval(cargarEstado, 5000);
+    });
+  </script>
+</body>
+</html>
