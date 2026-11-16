@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoria Técnica y Meta-Reflexión — Opción 1 (Solo Agentes en Chat) · Actividad 7 (TTE)</title>
+  <style>
+    :root {
+      --primary: #0369a1;
+      --primary-light: #e0f2fe;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --bg-box: #f8fafc;
+      --success-bg: #f0fdf4;
+      --warn-bg: #fffbeb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: #f1f5f9;
+      line-height: 1.6;
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .toolbar {
+      max-width: 900px;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+    .btn-print {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-print:hover { background: #0369a1; }
+    .document {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 3rem 3.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+    }
+    .cover-header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-size: 1.85rem;
+      margin: 0.25rem 0 0.5rem 0;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+    h2 {
+      font-size: 1.35rem;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-top: 2.25rem;
+    }
+    h3 {
+      font-size: 1.1rem;
+      color: #1e293b;
+      margin-top: 1.5rem;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 1.5rem;
+      background: var(--bg-box);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.8rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+    }
+    .box {
+      background: var(--bg-box);
+      border-left: 4px solid var(--primary);
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+    .box-warn {
+      background: var(--warn-bg);
+      border-left: 4px solid #d97706;
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      font-size: 0.88rem;
+    }
+    .box-success {
+      background: var(--success-bg);
+      border-left: 4px solid #16a34a;
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      font-size: 0.88rem;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.85em;
+    }
+    .bitacora-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+      background: #fafafa;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .toolbar { display: none; }
+      .document { box-shadow: none; padding: 0; max-width: 100%; }
+      h2 { page-break-after: avoid; }
+      .bitacora-card, table { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <div>💬 <strong>Trabajo Final de Cátedra (Actividad 7) · Opción 1: Solo Agentes en el Chat de Antigravity</strong></div>
+    <button class="btn-print" onclick="window.print()">🖨️ Guardar como PDF / Imprimir</button>
+  </div>
+
+  <div class="document">
+    <div class="cover-header">
+      <span class="badge">Actividad 7 · Trabajo Final de Cátedra (Opción 1: Solo Chat)</span>
+      <h1>Arquitectos de la Autonomía Docente: Solución a Problemas Reales de Clase con Equipos de Agentes en Antigravity</h1>
+      <p style="margin:0; color:var(--muted); font-size:1.05rem;">
+        Equipo de Agentes de IA para <strong>Elementos de Micro y Macroeconomía (5.° año, Nivel Secundario)</strong>
+      </p>
+      <div class="meta-grid">
+        <div><strong>Cátedra:</strong> Taller de Tecnología Educativa (TTE) — 2.° Cuatrimestre</div>
+        <div><strong>Docente Titular:</strong> Prof. Delmiro Gil</div>
+        <div><strong>Eje Seleccionado:</strong> Eje A — Realización Pedagógica y Didáctica de la Clase 💡</div>
+        <div><strong>Integrantes del Equipo:</strong> Eugenia Álvarez · Federico Bascialla · Martín Trifone · Adrián Fabrizio · Romina Tosar Sainz</div>
+      </div>
+    </div>
+
+    <h2>📦 Bloque A: Guía de la Solución Agéntica (Archivos de Configuración y Uso en Antigravity)</h2>
+    <p>
+      La solución agéntica está íntegramente configurada para ejecutarse dentro de <strong>Google Antigravity</strong> sin requerir servidores externos, instalaciones adicionales ni configuraciones complejas, garantizando su portabilidad inmediata en <strong>Windows, Linux y macOS</strong>.
+    </p>
+    <ul>
+      <li><code>AGENTS.md</code>: Reglas comunes del equipo, principio rector <em>"Garrocha, no muleta"</em>, anclaje documental obligatorio y protocolo de control de estados (<code>Estado: BORRADOR</code> ➔ <code>Estado: APROBADO</code>). Antigravity lo carga automáticamente desde la raíz del proyecto.</li>
+      <li><code>agentes/</code>: Los tres <em>System Prompts</em> individuales (<code>1-pedagogo-casista.md</code>, <code>2-disenador-guia.md</code> y <code>3-gamificador-desafio.md</code>).</li>
+      <li><code>.agents/workflows/</code> y <code>.agents/skills/</code>: Comandos directos para el chat de Antigravity (<code>/1-pedagogo</code>, <code>/2-disenador</code>, <code>/3-gamificador</code> y <code>/equipo-completo</code>).</li>
+      <li><code>materiales/</code>: Base de conocimiento (<em>grounding documental</em>) con la planificación anual oficial (<code>planificacion.md</code>) y el repertorio bibliográfico (<code>bibliografia.md</code>).</li>
+      <li><code>entradas/pedido.md</code>: Único archivo que completa el docente antes de iniciar, indicando unidad, tema, características del grupo y tiempo disponible.</li>
+      <li><code>salidas/</code>: Producciones de cada agente organizadas en <code>salidas/pedagogo/</code>, <code>salidas/disenador/</code> y <code>salidas/gamificador/</code>.</li>
+      <li><code>calibracion/</code>: Escenarios de prueba (<code>casos-de-prueba.md</code>) y bitácora de ajustes iterativos (<code>registro-calibracion.md</code>).</li>
+    </ul>
+
+    <h3>Guía rápida de uso para el docente</h3>
+    <ol>
+      <li>Abrir la carpeta del proyecto en <strong>Google Antigravity</strong> (<em>File ➔ Open Folder</em>).</li>
+      <li>Editar y guardar <code>entradas/pedido.md</code> con los datos de la clase.</li>
+      <li>Ejecutar <code>/1-pedagogo</code> en el chat. Revisar el caso generado en <code>salidas/pedagogo/</code> y cambiar su encabezado de <code>Estado: BORRADOR</code> a <code>Estado: APROBADO</code>.</li>
+      <li>Ejecutar <code>/2-disenador</code> en el chat. Revisar la guía en <code>salidas/disenador/</code> y cambiar su encabezado a <code>Estado: APROBADO</code>.</li>
+      <li>Ejecutar <code>/3-gamificador</code> en el chat para obtener las dos propuestas de dinámicas de aula en <code>salidas/gamificador/</code>.</li>
+    </ol>
+
+    <h2>🏗️ Bloque B: Memoria del Docente Diseñador ("La Fórmula del Arquitecto")</h2>
+
+    <h3>1. El Problema de Clase Elegido y su Justificación Pedagógica</h3>
+    <p>
+      El proyecto se ancla en la asignatura <strong>Elementos de micro y macroeconomía</strong> de <strong>5.° año de nivel secundario (Orientación Economía)</strong>, con estudiantes de entre 15 y 17 años. La planificación oficial de la materia (cargada en <code>materiales/planificacion.md</code>) recorre seis unidades troncales —desde teoría del consumidor, elasticidad, mercados y distribución del ingreso hasta PBI, política fiscal/monetaria, inflación y desempleo—, además del proyecto institucional transversal <em>"La deuda externa y la dictadura militar de 1976-1983"</em>.
+    </p>
+    <p>En la práctica cotidiana frente al curso, el equipo docente enfrenta tres obstáculos didácticos concretos que motivaron la elección del <strong>Eje A</strong>:</p>
+    <ol>
+      <li><strong>Lejanía de los ejemplos de manual:</strong> La bibliografía clásica utiliza ejemplos abstractos o foráneos (<em>"una fábrica de zapatos"</em>, <em>"el mercado de helados"</em>) distantes de la realidad cotidiana de adolescentes argentinos. Los estudiantes suelen resolver las cuentas de memoria sin comprender qué fenómeno real mide el concepto económico.</li>
+      <li><strong>Heterogeneidad de ritmos de aprendizaje:</strong> En un mismo curso conviven alumnos que operan con soltura porcentajes y gráficos junto a otros que requieren un andamiaje paso a paso para no bloquearse.</li>
+      <li><strong>Tiempo de preparación docente:</strong> Redactar desde cero un caso situado en el barrio o en el consumo adolescente, armar su guía con tres niveles de apoyo y diseñar además una dinámica participativa demanda varias horas de trabajo por clase.</li>
+    </ol>
+
+    <h3>2. Los Roles, System Prompts y Articulación del Equipo de Agentes</h3>
+    <p>
+      En lugar de recargar a un único agente generalista, el trabajo se dividió en <strong>tres roles secuenciales con límites estrictos</strong>, regidos por las reglas comunes de <code>AGENTS.md</code>:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Agente y Prompt</th>
+          <th>Tarea Individual y Qué Produce</th>
+          <th>Límites Estrictos (Qué NO hace)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Pedagogo / Casista</strong><br><code>agentes/1-pedagogo-casista.md</code></td>
+          <td>Lee <code>entradas/pedido.md</code> y <code>materiales/planificacion.md</code>. Genera el <strong>núcleo conceptual</strong> (analogía + idea previa errónea), un <strong>caso contextualizado</strong> argentino, <strong>3 preguntas graduadas</strong> y <strong>2 enfoques didácticos</strong> (inductivo y deductivo).</td>
+          <td>No redacta consignas para alumnos, guías ni rúbricas. No propone juegos. Prohibido usar ejemplos de manual o inventar cifras reales sin etiqueta <code>[DATO FICTICIO]</code> o <code>[VERIFICAR]</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Diseñador Didáctico</strong><br><code>agentes/2-disenador-guia.md</code></td>
+          <td>Lee únicamente un caso con <code>Estado: APROBADO</code> en <code>salidas/pedagogo/</code>. Arma la <strong>guía para estudiantes</strong> paso a paso, los <strong>3 niveles de andamiaje</strong> (<em>Con apoyo</em>, <em>Base</em>, <em>Ampliación</em>), criterios observables y la sección privada <em>"Solo docente"</em> con resolución y errores frecuentes.</td>
+          <td>Se detiene si el caso está en <code>BORRADOR</code>. No altera el caso aprobado, no inventa teoría, no agrega juegos ni fija notas o ponderaciones numéricas cerradas.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Gamificador / Dinamizador</strong><br><code>agentes/3-gamificador-desafio.md</code></td>
+          <td>Lee únicamente una guía con <code>Estado: APROBADO</code> en <code>salidas/disenador/</code>. Propone <strong>2 dinámicas de aula alternativas</strong> (juego de roles, negociación o simulación) con reglas, puente conceptual, preguntas de cierre y prevención de riesgos.</td>
+          <td>Se detiene si la guía está en <code>BORRADOR</code>. Prohibido el "Kahoot de preguntas" vacío de razonamiento económico y prohibido usar puntos o premios en temas sensibles de Derechos Humanos (Proyecto 1976-1983).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3. Registro de Calibración (Ensayos Reales y Ajustes Aplicados)</h3>
+    <p>
+      El detalle completo de las pruebas sobre los escenarios A, B y C se encuentra en <code>calibracion/registro-calibracion.md</code>. A continuación se sintetizan los tres hitos de calibración:
+    </p>
+
+    <div class="box-warn">
+      <strong>Ajuste N.º 1 — Agente 1 (Pedagogo): De ejemplos de manual e invasión de rol a casos situados</strong><br>
+      • <em>Respuesta inicial fallida:</em> Ante el pedido de <em>Elasticidad precio de la demanda</em>, generó el caso de una <em>"fábrica de calzado formal que sube el par de $50 a $60"</em> sin etiquetar datos ficticios y agregó al final una guía de consignas para el alumno con puntajes (4 pts, 3 pts, 3 pts).<br>
+      • <em>Ajuste en el prompt:</em> Se exigió situar los casos en consumos reales de chicos de 15 a 17 años en Argentina, etiquetar cada número de práctica con <code>[DATO FICTICIO]</code> y respetar el límite: <em>"No redactás consignas, guías de trabajo ni rúbricas: eso es del Agente 2"</em>.
+    </div>
+    <div class="box-success">
+      <strong>Resultado tras calibrar (<code>salidas/pedagogo/2026-11-06_unidad1_elasticidad.md</code>):</strong><br>
+      Creó el caso <em>"El dilema del quiosco de la esquina"</em> (Don Mario aplica un +30 % tanto al <strong>alfajor triple</strong> —cuyas ventas caen de 100 a 40 por sustitutos como el turrón o la fruta de la verdulería— como a las <strong>fotocopias obligatorias del cuadernillo</strong> —que apenas bajan de 100 a 90 por carecer de sustitutos—), etiquetando todas las cifras con <code>[DATO FICTICIO]</code> y cerrando con decisiones para el docente.
+    </div>
+
+    <div class="box-warn">
+      <strong>Ajuste N.º 2 — Agente 2 (Diseñador): Frenado por Human-in-the-Loop y 3 niveles de andamiaje</strong><br>
+      • <em>Respuesta inicial fallida:</em> Avanzó directamente sobre un archivo del Pedagogo que seguía en <code>Estado: BORRADOR</code>, redactó una única consigna algebraica uniforme e impuso porcentajes de calificación cerrados (50 %, 30 %, 20 %).<br>
+      • <em>Ajuste en el prompt:</em> Se incorporó la <strong>Condición de arranque obligatoria</strong> (frenar y avisar al docente si el archivo no dice <code>Estado: APROBADO</code>), la exigencia de <strong>3 niveles de andamiaje</strong> (<em>Con apoyo</em>, <em>Base</em>, <em>Ampliación</em>) y la prohibición de fijar escalas de nota.
+    </div>
+    <div class="box-success">
+      <strong>Resultado tras calibrar (<code>salidas/disenador/2026-11-06_unidad1_elasticidad.md</code>):</strong><br>
+      Se verificó primero el bloqueo efectivo cuando el caso estaba en <code>BORRADOR</code>. Tras pasar el caso a <code>APROBADO</code>, el Agente 2 produjo la guía de 80 minutos con pista de variación porcentual y glosario para el nivel <em>Con apoyo</em>, consigna regular para <em>Base</em> y pregunta contrafáctica sobre los precios de la verdulería para <em>Ampliación</em>.
+    </div>
+
+    <div class="box-warn">
+      <strong>Ajuste N.º 3 — Agente 3 (Gamificador) y Grounding en <code>AGENTS.md</code>: Ética y no alucinación</strong><br>
+      • <em>Respuesta inicial fallida (Prueba C — Deuda externa 1976-1983):</em> Propuso una <em>"Trivia del Endeudamiento por puntos y timbre"</em> e inventó cifras exactas con decimales atribuyéndolas al gráfico de la cátedra que no estaba cargado.<br>
+      • <em>Ajuste en el prompt:</em> Se prohibió inventar datos ausentes en <code>materiales/</code> exigiendo la marca <code>[VERIFICAR]</code>, y en el Gamificador se prohibió usar juegos de puntos/premios en temas dolorosos o de Derechos Humanos, exigiendo debate guiado y análisis documental.
+    </div>
+    <div class="box-success">
+      <strong>Resultado tras calibrar:</strong><br>
+      El agente descartó toda trivia competitiva, propuso una <em>Comisión de Análisis Documental y Debate con Fuentes</em> enmarcada en Memoria, Verdad y Justicia, e insertó las alertas <code>[VERIFICAR: cargar gráfico elaborado por la docente]</code> y <code>Rapoport, Mario — sin contenido cargado, consultar</code>.
+    </div>
+
+    <h3>4. Soberanía Docente (Human-in-the-Loop): Cómo el Docente Conserva el Control</h3>
+    <div class="box">
+      El principio rector <strong>"Garrocha, no muleta"</strong> se garantiza mediante cinco reglas operativas:
+      <ol style="margin-bottom:0;">
+        <li><strong>Sistema exclusivo para el docente:</strong> Los estudiantes nunca interactúan con Antigravity ni con la IA; reciben únicamente el material validado por el profesor.</li>
+        <li><strong>Freno técnico obligatorio (<code>BORRADOR</code> ➔ <code>APROBADO</code>):</strong> Los agentes 2 y 3 tienen prohibido avanzar si el docente no auditó y aprobó explícitamente el archivo Markdown anterior.</li>
+        <li><strong>Doble propuesta pedagógica:</strong> El sistema ofrece siempre dos caminos alternativos justificados para que el docente elija según la identidad de su grupo.</li>
+        <li><strong>Sección obligatoria "Decisiones para el docente":</strong> Cada salida explicita qué definiciones pedagógicas y evaluativas quedan en manos exclusivas del profesor.</li>
+        <li><strong>Trazabilidad documental (<code>[DATO FICTICIO]</code> y <code>[VERIFICAR]</code>):</strong> Evita que datos inventados se filtren al aula como si fueran estadísticas reales.</li>
+      </ol>
+    </div>
+
+    <h2>🧠 Bloque C: Meta-Reflexión Integral</h2>
+
+    <h3>1. Conclusión Grupal: ¿Garrocha Creativa o Riesgo de Muleta Rutinaria?</h3>
+    <p>
+      Al concluir el diseño y calibración de este equipo de agentes en Google Antigravity para <em>Elementos de micro y macroeconomía</em>, nuestra reflexión grupal confirma que <strong>el carácter de "garrocha" o de "muleta" no es un atributo intrínseco de la inteligencia artificial, sino el resultado directo de cómo el equipo docente diseña sus límites, sus fuentes y sus puntos de control humano</strong>.
+    </p>
+    <p>
+      En los primeros ensayos sin calibrar, comprobamos lo fácil que es caer en la <strong>muleta rutinaria</strong>: cuando se le pide a un modelo generalista que "arme una clase", tiende a entregar ejemplos estandarizados, ocultar vacíos bibliográficos con datos verosímiles pero inventados y decidir por su cuenta cómo calificar. Si el docente acepta ese producto sin fricción, su criterio profesional se retrae.
+    </p>
+    <p>
+      Por el contrario, configurar una <strong>mesa de trabajo con tres roles diferenciados (Pedagogo, Diseñador Didáctico y Gamificador)</strong> gobernados por <code>AGENTS.md</code> operó como una auténtica <strong>garrocha cognitiva</strong>:
+    </p>
+    <ul>
+      <li>Nos exigió <strong>hacer explícita nuestra propia didáctica de la Economía</strong> para poder traducirla en instrucciones precisas (qué hace que un caso sea significativo para un adolescente de 16 años, cómo andamiar sin infantilizar, qué límites éticos exige trabajar la deuda externa en dictadura).</li>
+      <li>Nos permitió invertir el tiempo ahorrado en redacción operativa en <strong>tomar mejores decisiones pedagógicas</strong>, comparando enfoques inductivos y deductivos o eligiendo entre una mesa de negociación y una simulación de mercado en el recreo.</li>
+      <li>La incorporación del freno obligatorio <code>Estado: BORRADOR</code> a <code>APROBADO</code> demostró que una buena solución educativa con IA no es la que "hace todo sola de corrido", sino la que <strong>sabe detenerse a tiempo para escuchar la voz y el juicio del docente</strong>.</li>
+    </ul>
+
+    <h3>2. Bitácoras Individuales ("De la Tiza al Algoritmo")</h3>
+
+    <div class="bitacora-card">
+      <h4 style="margin-top:0; color:var(--primary);">👤 Bitácora Individual — Eugenia Álvarez</h4>
+      <p><strong>Evolución y residuo cognitivo perdurable ("De la Tiza al Algoritmo"):</strong> Al comenzar el Taller de Tecnología Educativa, mi vínculo con la inteligencia artificial generativa era principalmente instrumental y aislado: hacerle consultas puntuales en un chat único y obtener respuestas dispares. El mayor aprendizaje que me llevo —el residuo cognitivo que modifica mi práctica de acá en adelante— es el paso de ser "usuaria que pregunta" a ser <strong>diseñadora de sistemas de trabajo docente</strong>. Comprender el concepto de <em>anclaje documental (grounding)</em> y ver cómo cambia radicalmente un agente cuando se lo ata a la planificación real de la materia y se le prohíbe inventar datos me demostró que la tecnología no viene a reemplazar el saber disciplinar del profesor, sino que exige aún más rigor conceptual para poder guiarla.</p>
+      <p><strong>Valoración de la materia y sugerencias:</strong> Destaco especialmente que la cátedra haya trabajado con libertad temática total y sobre problemas reales de nuestras aulas, en lugar de ejercicios artificiales de programación. La metáfora de la <em>"garrocha versus la muleta"</em> resultó sumamente potente como brújula ética y práctica durante todo el cuatrimestre. Mantendría intacta la modalidad de taller práctico y progresivo, y agregaría una sesión breve de intercambio cruzado donde un grupo pruebe en vivo el equipo de agentes diseñado por otro grupo de distinta disciplina.</p>
+    </div>
+
+    <div class="bitacora-card">
+      <h4 style="margin-top:0; color:var(--primary);">👤 Bitácora Individual — Federico Bascialla</h4>
+      <p><strong>Evolución y residuo cognitivo perdurable ("De la Tiza al Algoritmo"):</strong> Mi principal cambio de mirada durante el taller estuvo en descubrir el valor de la <strong>modularidad y la orquestación de roles</strong>. Antes pensaba que si una IA no daba una buena clase a la primera era por una limitación del modelo; hoy entiendo que el diseño didáctico tiene etapas distintas (pensar el problema situado, armar el andamiaje para ritmos diversos, dinamizar el grupo) y que separar esas funciones en agentes con límites precisos mejora exponencialmente el resultado. Me llevo como aprendizaje perdurable la práctica de la <strong>calibración iterativa</strong>: observar con ojo crítico dónde falla una respuesta (por fría, complaciente o genérica) y traducir esa observación pedagógica en una regla clara de diseño.</p>
+      <p><strong>Valoración de la materia y sugerencias:</strong> La forma de encarar la materia fue sumamente respetuosa de la autonomía docente. Lejos de presentar a la tecnología como una solución mágica o tecnocrática, el taller nos puso siempre en el centro de la toma de decisiones, integrando el debate ético dentro del propio diseño técnico. Sumaría un banco compartido de <em>System Prompts</em> y casos calibrados entre todos los equipos de la cursada.</p>
+    </div>
+
+    <div class="bitacora-card">
+      <h4 style="margin-top:0; color:var(--primary);">👤 Bitácora Individual — Martín Trifone</h4>
+      <p><strong>Evolución y residuo cognitivo perdurable ("De la Tiza al Algoritmo"):</strong> A lo largo del recorrido "de la tiza al algoritmo" logré desmitificar la complejidad técnica de configurar agentes en un entorno como Antigravity. Al organizar una estructura limpia de archivos de texto (<code>.md</code>) con comandos directos en el chat (<code>/1-pedagogo</code>, <code>/2-disenador</code>, <code>/3-gamificador</code>) que funciona sin instalar nada extra en Windows o Linux, comprendí que la portabilidad y la simpleza son claves para que una innovación llegue realmente al trabajo docente. El residuo cognitivo más valioso que incorporo es la certeza de que la IA puede ayudarnos a personalizar la enseñanza en cursos heterogéneos, siempre que el docente conserve la última palabra frente a su grupo.</p>
+      <p><strong>Valoración de la materia y sugerencias:</strong> Valoré mucho el acompañamiento paso a paso y el clima de experimentación sin miedo al error. Trabajar sobre una planificación real de escuela secundaria le dio al Trabajo Final un sentido de utilidad inmediata que trasciende la aprobación de la materia. Agregaría un pequeño bloque dedicado a estrategias para transferir estas herramientas a colegas de nuestras instituciones.</p>
+    </div>
+
+    <div class="bitacora-card">
+      <h4 style="margin-top:0; color:var(--primary);">👤 Bitácora Individual — Adrián Fabrizio</h4>
+      <p><strong>Evolución y residuo cognitivo perdurable ("De la Tiza al Algoritmo"):</strong> Para mí, el mayor hallazgo del cuatrimestre fue comprobar cómo la exigencia de <strong>transparencia epistemológica</strong> (<code>[DATO FICTICIO]</code> vs. <code>[VERIFICAR]</code>) transforma por completo la confiabilidad de un asistente de IA en asignaturas como Economía e Historia Económica. Al principio veía el riesgo constante de las alucinaciones como una barrera insalvable; al diseñar <code>AGENTS.md</code> y comprobar en la Prueba C (Deuda externa 1976-1983) que el agente se detenía a advertir qué gráfico faltaba cargar en lugar de inventar estadísticas, comprendí que los límites explícitos son el corazón de la arquitectura agéntica.</p>
+      <p><strong>Valoración de la materia y sugerencias:</strong> El enfoque del taller logró equilibrar la reflexión pedagógica profunda con la resolución práctica en computadora, permitiéndonos discutir sobre soberanía docente y memoria histórica mientras aprendíamos a estructurar flujos de trabajo reproducibles. Incorporaría más ejemplos comparativos de cómo distintos modelos interpretan un mismo <em>System Prompt</em>.</p>
+    </div>
+
+    <div class="bitacora-card">
+      <h4 style="margin-top:0; color:var(--primary);">👤 Bitácora Individual — Romina Tosar Sainz</h4>
+      <p><strong>Evolución y residuo cognitivo perdurable ("De la Tiza al Algoritmo"):</strong> En mi recorrido por la materia pasé de pensar la IA como una herramienta de consulta individual a concebirla como un <strong>espacio de co-diseño didáctico pensado para la diversidad del aula</strong>. Lo que más me impactó fue ver materializados los tres niveles de andamiaje (<em>Con apoyo</em>, <em>Base</em> y <em>Ampliación</em>) sobre un mismo caso económico cotidiano: esa estructura permite que ningún estudiante de 5.° año quede afuera por trabarse en un porcentaje, sin bajar el techo de reflexión crítica para quienes avanzan más rápido. Ese criterio de diseño inclusivo asistido por agentes es el aprendizaje más valioso que me llevo a mi práctica docente.</p>
+      <p><strong>Valoración de la materia y sugerencias:</strong> Rescato la calidez pedagógica de la cátedra y la insistencia permanente en que el docente nunca delegue su juicio ético ni evaluativo. Sentí que cada actividad nos daba herramientas concretas para volver al aula con propuestas más creativas y cercanas a los estudiantes. Sumaría una instancia final de puesta en común donde podamos proyectar las guías y dinámicas generadas para recibir retroalimentación didáctica de los demás grupos.</p>
+    </div>
+
+  </div>
+</body>
+</html>

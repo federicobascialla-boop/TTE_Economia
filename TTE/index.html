@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipo de Agentes de IA · Economía (5.° año) — Taller de Tecnología Educativa</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --success: #16a34a;
+      --success-hover: #15803d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2.5rem 1.25rem;
+    }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.85rem;
+    }
+    .hero h1 {
+      font-size: 2rem;
+      line-height: 1.25;
+      margin-bottom: 0.6rem;
+    }
+    .hero p {
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      margin-bottom: 1.25rem;
+    }
+    .team-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 0.85rem 1.2rem;
+      font-size: 0.92rem;
+      color: #f1f5f9;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .card.featured {
+      border: 2px solid var(--success);
+      background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 45%);
+      grid-column: 1 / -1;
+    }
+    .card h2 {
+      font-size: 1.25rem;
+      color: #0f172a;
+      margin-bottom: 0.35rem;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.35rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover { background: var(--success-hover); }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: white;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-outline:hover { background: #f1f5f9; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <span class="badge">Taller de Tecnología Educativa (TTE) · Actividad 7 · Prof. Delmiro Gil</span>
+      <h1>Equipo de Agentes de IA para Economía (5.° año)</h1>
+      <p>
+        Solución agéntica con principio <strong>"Garrocha, no muleta"</strong> para diseñar casos contextualizados, guías de aula con 3 niveles de andamiaje y dinámicas participativas en <em>Elementos de micro y macroeconomía</em>.
+      </p>
+      <div class="team-box">
+        <div><strong>Integrantes del Equipo:</strong> Eugenia Álvarez · Federico Bascialla · Martín Trifone · Adrián Fabrizio · Romina Tosar Sainz</div>
+        <div><strong>Eje A:</strong> Realización Pedagógica y Didáctica de la Clase 💡</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Card Principal: Gestor Web -->
+      <div class="card featured">
+        <div>
+          <span style="display:inline-block; background:#dcfce7; color:#15803d; font-weight:700; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:999px; margin-bottom:0.5rem; text-transform:uppercase;">
+            Aplicación Web Interactiva · Funciona Online y Offline
+          </span>
+          <h2>🌐 Panel de Gestión Docente y Generador de Clases (3 Agentes)</h2>
+          <p>
+            Elegí la <strong>Unidad de la Planificación</strong> y el <strong>Tema específico</strong> en los menús desplegables, generá el Caso con el <strong>Agente 1 (Pedagogo)</strong>, aprobalo con un clic para desbloquear la Guía con andamiaje del <strong>Agente 2 (Diseñador)</strong> y las Dinámicas del <strong>Agente 3 (Gamificador)</strong>, e imprimí la hoja A4 lista para tus estudiantes.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <a href="Opcion-2-Agentes-Con-Gestor-Web/panel/index.html" class="btn btn-success">
+            🚀 Abrir Gestor Web Docente Ahora
+          </a>
+          <a href="Presentacion_Diapositivas.html" class="btn btn-primary">
+            📊 Ver Presentación de Diapositivas (10 Slides)
+          </a>
+        </div>
+      </div>
+
+      <!-- Memoria Opción 2 -->
+      <div class="card">
+        <div>
+          <h2>📄 Memoria Técnica y Meta-Reflexión (Opción 2: Agentes + Gestor Web)</h2>
+          <p>
+            Documento completo de entrega con la Guía de la Solución (Bloque A), La Fórmula del Arquitecto y Registro de Calibración (Bloque B) y las 5 Bitácoras Individuales del equipo (Bloque C).
+          </p>
+        </div>
+        <a href="Memoria_Opcion2_Agentes_Con_Gestor_Web.html" class="btn btn-outline">
+          📖 Leer / Imprimir Memoria Opción 2
+        </a>
+      </div>
+
+      <!-- Memoria Opción 1 -->
+      <div class="card">
+        <div>
+          <h2>💬 Memoria Técnica y Meta-Reflexión (Opción 1: Solo Agentes en Chat)</h2>
+          <p>
+            Versión de la memoria centrada en el flujo 100 % dentro del entorno de chat de Google Antigravity mediante archivos Markdown y comandos (<code>/1-pedagogo</code>, <code>/2-disenador</code>, <code>/3-gamificador</code>).
+          </p>
+        </div>
+        <a href="Memoria_Opcion1_Solo_Agentes_Chat.html" class="btn btn-outline">
+          📖 Leer / Imprimir Memoria Opción 1
+        </a>
+      </div>
+
+      <!-- Paquetes Descargables -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div>
+          <h2>📦 Descargar Paquetes Comprimidos (.ZIP) para Uso Local</h2>
+          <p>
+            Si querés descargar las carpetas completas con los prompts de los agentes, la planificación de la materia y los iniciadores locales para Windows, Mac y Linux:
+          </p>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <a href="Paquetes-Comprimidos-ZIP/Opcion-2-Agentes-Con-Gestor-Web.zip" download class="btn btn-outline">
+            ⬇️ Descargar Opción 2 (Agentes + Gestor Web).zip
+          </a>
+          <a href="Paquetes-Comprimidos-ZIP/Opcion-1-Solo-Agentes-Chat.zip" download class="btn btn-outline">
+            ⬇️ Descargar Opción 1 (Solo Agentes Chat).zip
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Cátedra: Elementos de Micro y Macroeconomía (5.° año) · Taller de Tecnología Educativa (TTE) — 2026
+    </footer>
+  </div>
+</body>
+</html>
