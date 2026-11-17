@@ -114,11 +114,21 @@
       text-decoration: none;
       transition: all 0.2s;
     }
-    .btn-success { background: var(--success); color: white; }
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
     .btn-success:hover { background: var(--success-hover); }
-    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
     .btn-primary:hover { background: var(--primary-hover); }
-    .btn-outline { background: white; color: #1e293b; border: 1px solid #cbd5e1; }
+    .btn-outline {
+      background: white;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+    }
     .btn-outline:hover { background: #f1f5f9; }
     footer {
       text-align: center;
@@ -144,10 +154,11 @@
     </div>
 
     <div class="grid">
+      <!-- Card Principal: Gestor Web -->
       <div class="card featured">
         <div>
           <span style="display:inline-block; background:#dcfce7; color:#15803d; font-weight:700; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:999px; margin-bottom:0.5rem; text-transform:uppercase;">
-            Aplicación Web Interactiva · 100% Funcional en el Navegador
+            Aplicación Web Interactiva · Funciona Online y Offline
           </span>
           <h2>🌐 Panel de Gestión Docente y Generador de Clases (3 Agentes)</h2>
           <p>
@@ -155,15 +166,16 @@
           </p>
         </div>
         <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-          <a href="gestor.html" class="btn btn-success">
+          <a href="Opcion-2-Agentes-Con-Gestor-Web/panel/index.html" class="btn btn-success">
             🚀 Abrir Gestor Web Docente Ahora
           </a>
-          <a href="diapositivas.html" class="btn btn-primary">
+          <a href="Presentacion_Diapositivas.html" class="btn btn-primary">
             📊 Ver Presentación de Diapositivas (10 Slides)
           </a>
         </div>
       </div>
 
+      <!-- Memoria Opción 2 -->
       <div class="card">
         <div>
           <h2>📄 Memoria Técnica y Meta-Reflexión (Opción 2: Agentes + Gestor Web)</h2>
@@ -176,16 +188,35 @@
         </a>
       </div>
 
+      <!-- Memoria Opción 1 -->
       <div class="card">
         <div>
           <h2>💬 Memoria Técnica y Meta-Reflexión (Opción 1: Solo Agentes en Chat)</h2>
           <p>
-            Versión de la memoria centrada en el flujo dentro del entorno de chat de Google Antigravity mediante archivos Markdown y comandos (<code>/1-pedagogo</code>, <code>/2-disenador</code>, <code>/3-gamificador</code>).
+            Versión de la memoria centrada en el flujo 100 % dentro del entorno de chat de Google Antigravity mediante archivos Markdown y comandos (<code>/1-pedagogo</code>, <code>/2-disenador</code>, <code>/3-gamificador</code>).
           </p>
         </div>
         <a href="Memoria_Opcion1_Solo_Agentes_Chat.html" class="btn btn-outline">
           📖 Leer / Imprimir Memoria Opción 1
         </a>
+      </div>
+
+      <!-- Paquetes Descargables -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div>
+          <h2>📦 Descargar Paquetes Comprimidos (.ZIP) para Uso Local</h2>
+          <p>
+            Si querés descargar las carpetas completas con los prompts de los agentes, la planificación de la materia y los iniciadores locales para Windows, Mac y Linux:
+          </p>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <a href="Paquetes-Comprimidos-ZIP/Opcion-2-Agentes-Con-Gestor-Web.zip" download class="btn btn-outline">
+            ⬇️ Descargar Opción 2 (Agentes + Gestor Web).zip
+          </a>
+          <a href="Paquetes-Comprimidos-ZIP/Opcion-1-Solo-Agentes-Chat.zip" download class="btn btn-outline">
+            ⬇️ Descargar Opción 1 (Solo Agentes Chat).zip
+          </a>
+        </div>
       </div>
     </div>
 
