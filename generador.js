@@ -1,9 +1,24 @@
 /**
  * Motor Pedagógico de Generación Local para los 3 Agentes (Economía 5.° año)
- * Alineado 100% con materiales/planificacion.md, AGENTS.md y las reglas de los 3 agentes.
+ * Articula los 3 archivos modulares separados:
+ *   1. datos-planificacion.js (espejo de materiales/planificacion.md)
+ *   2. datos-bibliografia.js  (espejo de materiales/bibliografia.md)
+ *   3. config-agentes.js      (espejo de AGENTS.md y agentes/*.md)
  */
 
-const UNIDADES_Y_TEMAS = {
+const _PLANIFICACION = (typeof require !== 'undefined' && typeof module !== 'undefined')
+  ? require('./datos-planificacion').PLANIFICACION_CATEDRA
+  : (typeof window !== 'undefined' ? window.PLANIFICACION_CATEDRA : null);
+
+const _BIBLIOGRAFIA = (typeof require !== 'undefined' && typeof module !== 'undefined')
+  ? require('./datos-bibliografia').BIBLIOGRAFIA_CATEDRA
+  : (typeof window !== 'undefined' ? window.BIBLIOGRAFIA_CATEDRA : null);
+
+const _AGENTES = (typeof require !== 'undefined' && typeof module !== 'undefined')
+  ? require('./config-agentes').CONFIGURACION_AGENTES
+  : (typeof window !== 'undefined' ? window.CONFIGURACION_AGENTES : null);
+
+const UNIDADES_Y_TEMAS = (_PLANIFICACION && _PLANIFICACION.unidadesYTemas) ? _PLANIFICACION.unidadesYTemas : {
   "Período diagnóstico — Unidad introductoria": [
     "Escasez, necesidades sociales y definiciones del campo económico",
     "Elementos metodológicos y estructura de un sistema económico",
@@ -704,6 +719,9 @@ function generarPedagogo(pedidoParsed) {
 
   const p = seleccionarPlantilla(unidadTema);
   const fecha = obtenerFechaHoy();
+  const citaBiblio = (_BIBLIOGRAFIA && typeof _BIBLIOGRAFIA.obtenerCitaPorUnidad === 'function')
+    ? _BIBLIOGRAFIA.obtenerCitaPorUnidad(p.unidad)
+    : 'materiales/bibliografia.md (sin contenido cargado, consultar)';
 
   const notaObservaciones = observaciones
     ? `\n> **Adaptación especial a tus observaciones docentes:** Se incorporó tu pedido de *"${observaciones}"* y se cuidó expresamente evitar *"${evitar}"*.`
@@ -713,7 +731,7 @@ function generarPedagogo(pedidoParsed) {
 Fecha: ${fecha}
 Pedido: ${unidadTema} (${tiempo}, ${modalidad}, ${curso})
 Unidad y contenidos: ${p.unidad} — ${p.contenidos}
-Fuentes usadas: materiales/planificacion.md; materiales/bibliografia.md; entradas/pedido.md
+Fuentes usadas: materiales/planificacion.md; ${citaBiblio}; entradas/pedido.md
 Estado: BORRADOR
 
 ---
@@ -722,6 +740,7 @@ Estado: BORRADOR
 
 - **Unidad y tema seleccionado:** ${unidadTema}
 - **Contenidos de la planificación:** ${p.contenidos}
+- **Bibliografía de referencia por unidad (según \`materiales/bibliografia.md\`):** ${citaBiblio}
 - **Destinatarios y organización:** ${curso} · **Tiempo:** ${tiempo} · **Modalidad:** ${modalidad}.
 - **Condiciones de aula consideradas:** ${restricciones}.
 - **Expectativas de logro vinculadas:**

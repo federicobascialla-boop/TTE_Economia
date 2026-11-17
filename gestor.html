@@ -446,6 +446,7 @@
         <span id="tabBadgeGamificador" class="badge badge-bloqueado">Bloqueado</span>
       </button>
       <button class="tab-btn" onclick="switchTab('tab-imprimir')">🖨️ 5. Vista de Impresión</button>
+      <button class="tab-btn" onclick="switchTab('tab-fuentes'); renderizarFuentes();">📚 6. Fuentes y Agentes</button>
     </nav>
 
     <!-- TAB 1: PEDIDO -->
@@ -794,8 +795,33 @@
       </div>
     </section>
 
+    <!-- TAB 6: FUENTES Y CONFIGURACIÓN SEPARADAS -->
+    <section id="tab-fuentes" class="tab-pane" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📚 Archivos de Base Documental y Configuración de Agentes</div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="mostrarFuenteModulo('planificacion')">📋 1. Planificación</button>
+            <button class="btn btn-outline" onclick="mostrarFuenteModulo('bibliografia')">📖 2. Bibliografía</button>
+            <button class="btn btn-outline" onclick="mostrarFuenteModulo('agentes')">🤖 3. Configuración Agentes</button>
+          </div>
+        </div>
+        <div class="callout info">
+          <div>
+            <strong>Arquitectura modular separada:</strong> Tal como en las carpetas del proyecto (<code>materiales/planificacion.md</code>, <code>materiales/bibliografia.md</code> y <code>agentes/*.md</code>), la versión web mantiene separados en tres módulos independientes la <strong>Planificación</strong> (<code>datos-planificacion.js</code>), la <strong>Bibliografía</strong> (<code>datos-bibliografia.js</code>) y la <strong>Configuración de los 3 Agentes</strong> (<code>config-agentes.js</code>).
+          </div>
+        </div>
+        <div id="viewerFuentesModulo" class="document-viewer">
+          <em>Seleccioná un módulo arriba...</em>
+        </div>
+      </div>
+    </section>
+
   </div>
 
+  <script src="datos-planificacion.js"></script>
+  <script src="datos-bibliografia.js"></script>
+  <script src="config-agentes.js"></script>
   <script src="generador.js"></script>
   <script>
     let estadoActual = null;
@@ -1542,6 +1568,73 @@
       if (inTable) out.push('</tbody></table>');
       if (inList) out.push('</ul>');
       return out.join('\n');
+    }
+
+    let fuenteActual = 'planificacion';
+    function renderizarFuentes() {
+      mostrarFuenteModulo(fuenteActual);
+    }
+
+    function mostrarFuenteModulo(modulo) {
+      fuenteActual = modulo;
+      const viewer = document.getElementById('viewerFuentesModulo');
+      if (!viewer) return;
+
+      if (modulo === 'planificacion' && window.PLANIFICACION_CATEDRA) {
+        const P = window.PLANIFICACION_CATEDRA;
+        let md = `# Planificación Oficial (${P.fuenteArchivo})\n\n`;
+        md += `**Materia:** ${P.materia}\n\n`;
+        md += `## Capacidades a adquirir\n`;
+        P.capacidades.forEach(c => { md += `- ${c}\n`; });
+        md += `\n---\n\n## Expectativas de logro\n`;
+        Object.values(P.expectativasDeLogro).forEach(e => { md += `- ${e}\n`; });
+        md += `\n---\n\n## Unidades y Temas específicos\n`;
+        Object.entries(P.unidadesYTemas).forEach(([u, temas]) => {
+          md += `\n### ${u}\n`;
+          temas.forEach(t => { md += `- ${t}\n`; });
+        });
+        viewer.innerHTML = renderMarkdown(md);
+        return;
+      }
+
+      if (modulo === 'bibliografia' && window.BIBLIOGRAFIA_CATEDRA) {
+        const B = window.BIBLIOGRAFIA_CATEDRA;
+        let md = `# Bibliografía del Docente (${B.fuenteArchivo})\n\n`;
+        md += `> **Regla de trazabilidad documental:** Los textos listados que no tengan su contenido completo cargado en \`materiales/bibliografia/\` se citan aclarando *"(${B.reglaCitacion})"*\n\n`;
+        md += `## Catálogo de 28 obras de la planificación\n`;
+        Object.entries(B.catalogo).forEach(([num, obra]) => {
+          md += `- **#${num}:** ${obra}\n`;
+        });
+        md += `\n---\n\n## Mapa orientativo Texto ➔ Unidad\n\n`;
+        md += `| Unidad de la Planificación | Textos asociados en bibliografia.md |\n|---|---|\n`;
+        Object.entries(B.mapaPorUnidad).forEach(([unidad, ids]) => {
+          const lista = ids.map(i => `#${i}`).join(', ');
+          md += `| **${unidad}** | Textos ${lista} |\n`;
+        });
+        viewer.innerHTML = renderMarkdown(md);
+        return;
+      }
+
+      if (modulo === 'agentes' && window.CONFIGURACION_AGENTES) {
+        const A = window.CONFIGURACION_AGENTES;
+        let md = `# Configuración del Equipo de Agentes (AGENTS.md y agentes/*.md)\n\n`;
+        md += `> **Principio rector:** ${A.principioRector}\n\n`;
+        md += `## Reglas comunes de gobernanza (AGENTS.md)\n`;
+        A.reglasComunes.forEach(r => { md += `- ${r}\n`; });
+        md += `\n---\n`;
+        Object.values(A.agentes).forEach(ag => {
+          md += `\n## ${ag.nombre} (\`${ag.archivoPrompt}\`)\n`;
+          if (ag.condicionArranque) md += `- **Condición obligatoria de arranque:** ${ag.condicionArranque}\n`;
+          md += `- **Qué lee:** ${ag.queLee.join(', ')}\n`;
+          md += `\n### Qué produce:\n`;
+          ag.queProduce.forEach(p => { md += `- ${p}\n`; });
+          md += `\n### Límites estrictos (Qué NO hace):\n`;
+          ag.limites.forEach(l => { md += `- ${l}\n`; });
+          md += `\n---\n`;
+        });
+        viewer.innerHTML = renderMarkdown(md);
+        return;
+      }
     }
 
     // Inicializar al cargar
