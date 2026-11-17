@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentación: Dos Formas de Trabajar con el Equipo de Agentes · Economía 5.° año</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
+      --accent: #f59e0b;
+      --accent-light: #fef3c7;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --border: #334155;
+      --slide-bg: #ffffff;
+      --slide-text: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    /* Top navigation bar */
+    .top-bar {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .top-bar a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .top-bar a:hover { text-decoration: underline; }
+
+    /* Nav quick jumps */
+    .quick-jumps {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .jump-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .jump-btn:hover {
+      background: #334155;
+      color: #38bdf8;
+    }
+
+    /* Slide container */
+    .deck-container {
+      width: 100%;
+      max-width: 1240px;
+      aspect-ratio: 16 / 9.5;
+      min-height: 650px;
+      background: var(--slide-bg);
+      color: var(--slide-text);
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 2.25rem 3.25rem;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease-in-out;
+      overflow-y: auto;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Badges & Titles */
+    .slide-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.4rem;
+    }
+    .badge-intro { background: #e0f2fe; color: #0369a1; }
+    .badge-opcion-a { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .badge-opcion-b { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-cierre { background: #fef3c7; color: #b45309; }
+
+    .slide-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+      margin-bottom: 0.3rem;
+    }
+    .slide-subtitle {
+      font-size: 1.05rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.15rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .card.highlight { background: #f0fdf4; border-color: #bbf7d0; }
+    .card.accent { background: #fffbeb; border-color: #fde68a; }
+
+    .route-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-align: left;
+    }
+    .route-card:hover {
+      border-color: #0284c7;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
+    .route-card.card-a:hover { border-color: #475569; }
+    .route-card.card-b:hover { border-color: #16a34a; }
+
+    /* Screenshot container */
+    .screenshot-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px -2px rgba(0,0,0,0.1);
+      background: #f8fafc;
+    }
+    .screenshot-bar {
+      background: #e2e8f0;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .screenshot-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* Tag pills */
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+    .tag-chat { background: #0f172a; color: #38bdf8; }
+    .tag-web { background: #16a34a; color: white; }
+
+    /* Code snippet box */
+    .code-box {
+      background: #1e293b;
+      color: #f8fafc;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      line-height: 1.45;
+      margin: 0.35rem 0;
+    }
+
+    /* Controls bar */
+    .controls {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+    }
+    .btn-nav {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover { background: #334155; color: white; }
+    .progress-info { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+
+    /* Print settings */
+    @media print {
+      body { background: white; padding: 0; }
+      .top-bar, .controls { display: none; }
+      .deck-container { box-shadow: none; border: none; width: 100%; max-width: 100%; aspect-ratio: auto; }
+      .slide { display: flex !important; page-break-after: always; height: 100vh; padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <div class="top-bar">
+    <div><strong>Cátedra de Economía (5.º año)</strong> · Presentación de las Dos Opciones</div>
+    <div class="quick-jumps">
+      <button class="jump-btn" onclick="irASlide(0)">🏠 Inicio</button>
+      <button class="jump-btn" onclick="irASlide(2)">🗺️ Las 2 Opciones</button>
+      <button class="jump-btn" onclick="irASlide(3)">💬 Opción 1 (Solo Chat)</button>
+      <button class="jump-btn" onclick="irASlide(6)">🌐 Opción 2 (Con Gestor Web)</button>
+      <button class="jump-btn" onclick="irASlide(9)">⚖️ Comparativa</button>
+      <span style="margin: 0 0.25rem; color:#475569;">|</span>
+      <button onclick="window.print()" style="background:none; border:none; color:#38bdf8; cursor:pointer; font-weight:600;">🖨️ Imprimir PDF</button>
+    </div>
+  </div>
+
+  <!-- Deck Container -->
+  <div class="deck-container" id="deckContainer">
+
+    <!-- DIAPO 1: PORTADA -->
+    <div class="slide active">
+      <div>
+        <span class="slide-badge badge-intro">Guía para el Equipo Docente</span>
+        <h1 class="slide-title" style="font-size:2.6rem; color:#0369a1;">
+          Sistema de Agentes para Economía (5.° año)
+        </h1>
+        <p class="slide-subtitle" style="font-size:1.15rem; margin-top:0.4rem;">
+          Cómo armar casos de estudio reales, guías de aula y dinámicas pedagógicas adaptadas a la comodidad de cada docente.
+        </p>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem;">
+        <div class="card highlight">
+          <strong style="color:#15803d; font-size:0.95rem;">🎯 El Problema que Resuelve</strong>
+          <p style="font-size:0.85rem; color:#334155;">Los libros de texto traen ejemplos abstractos y lejanos. Este sistema genera borradores cotidianos argentinos (quioscos, transporte, changas, inflación) en minutos.</p>
+        </div>
+        <div class="card highlight">
+          <strong style="color:#0369a1; font-size:0.95rem;">🤖 Los 3 Agentes Especialistas</strong>
+          <p style="font-size:0.85rem; color:#334155;">1. <strong>Pedagogo:</strong> crea el caso y núcleo conceptual.<br>2. <strong>Diseñador:</strong> crea la guía de aula con andamiaje.<br>3. <strong>Gamificador:</strong> crea 2 dinámicas lúdicas.</p>
+        </div>
+        <div class="card highlight">
+          <strong style="color:#b45309; font-size:0.95rem;">🛡️ Control Humano Obligatorio</strong>
+          <p style="font-size:0.85rem; color:#334155;">Los agentes se frenan en cada paso. Nada llega al aula sin que el docente revise y dé su aprobación explícita.</p>
+        </div>
+      </div>
+
+      <div style="font-size:0.85rem; color:#64748b; border-top:1px solid #e2e8f0; padding-top:0.6rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <span><strong>Equipo:</strong> Eugenia Álvarez · Federico Bascialla · Martín Trifone · Adrián Fabrizio · Romina Tosar Sainz</span>
+        <span>Avanzá con la flecha <strong>→</strong> o hacé clic en las opciones</span>
+      </div>
+    </div>
+
+    <!-- DIAPO 2: ¿QUÉ ES LA HERRAMIENTA? -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-intro">1. Fundamentos</span>
+        <h2 class="slide-title">¿Qué es exactamente este sistema?</h2>
+        <p class="slide-subtitle">Una secretaría pedagógica virtual anclada a la planificación oficial de la materia.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <strong style="font-size:1rem; color:#0f172a;">📚 Anclaje Estricto a la Planificación</strong>
+          <p style="font-size:0.85rem; color:#475569; line-height:1.45;">
+            Los agentes leen directamente los contenidos de <code>materiales/planificacion.md</code>.
+          </p>
+          <ul style="margin-left:1.25rem; font-size:0.85rem; color:#475569; line-height:1.45;">
+            <li><strong>Prohibido inventar datos reales:</strong> cualquier número inventado para practicar se marca <code style="color:#3730a3;">[DATO FICTICIO]</code>.</li>
+            <li>Si un dato real no está verificado en la bibliografía, se etiqueta <code style="color:#92400e;">[VERIFICAR]</code>.</li>
+            <li>Redactado en español rioplatense claro con voseo formativo.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:1rem; color:#0f172a;">👥 El Principio "Garrocha, no muleta"</strong>
+          <p style="font-size:0.85rem; color:#475569; line-height:1.45;">
+            La IA no reemplaza al docente ni decide por él:
+          </p>
+          <ul style="margin-left:1.25rem; font-size:0.85rem; color:#475569; line-height:1.45;">
+            <li>No califica a los alumnos ni define notas finales.</li>
+            <li>Propone siempre <strong>dos alternativas</strong> pedagógicas justificadas.</li>
+            <li>Cierra cada entrega con <strong>"Decisiones para el docente"</strong> (tiempos, nivel del grupo, qué descartar).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card accent" style="text-align:center; padding:0.6rem 1rem;">
+        <span style="font-size:0.88rem; color:#78350f;">
+          💡 <strong>Lo importante:</strong> Los alumnos nunca interactúan con la IA. Solo reciben la guía impresa lista para resolver en clase.
+        </span>
+      </div>
+    </div>
+
+    <!-- DIAPO 3: EL MAPA DE LAS 2 ALTERNATIVAS (BIFURCACIÓN) -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-intro">2. Elige tu Camino</span>
+        <h2 class="slide-title">Dos formas de trabajar con los mismos agentes</h2>
+        <p class="slide-subtitle">Los contenidos que generan los agentes son idénticos; lo que cambia es <strong>cómo preferís interactuar vos</strong>.</p>
+      </div>
+
+      <div class="grid-2" style="margin: 1rem 0;">
+        <!-- Card Opción 1 -->
+        <div class="route-card card-a" onclick="irASlide(3)">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span class="slide-badge badge-opcion-a">Opción 1</span>
+              <span class="tag-pill tag-chat">100% en Antigravity</span>
+            </div>
+            <h3 style="font-size:1.35rem; color:#0f172a; margin-bottom:0.4rem;">💬 Modo Solo Chat (Tradicional)</h3>
+            <p style="font-size:0.88rem; color:#64748b; line-height:1.45;">
+              Trabajás únicamente dentro de la ventana de chat de Antigravity. Escribís los comandos, abrís los archivos en la carpeta y cambiás el estado a mano.
+            </p>
+            <div style="margin-top:0.75rem; font-size:0.82rem; color:#475569;">
+              ✓ <strong>Ideal si:</strong> te gusta tener todo en una sola ventana y no querés abrir páginas web ni servidores.
+            </div>
+          </div>
+          <div style="margin-top:1.25rem; font-weight:700; color:#0284c7; font-size:0.9rem;">
+            Ver cómo funciona la Opción 1 ➔
+          </div>
+        </div>
+
+        <!-- Card Opción 2 -->
+        <div class="route-card card-b" onclick="irASlide(6)">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span class="slide-badge badge-opcion-b">Opción 2</span>
+              <span class="tag-pill tag-web">100% Web (Online / Offline)</span>
+            </div>
+            <h3 style="font-size:1.35rem; color:#15803d; margin-bottom:0.4rem;">🌐 Gestor Web Autónomo (GitHub / Local)</h3>
+            <p style="font-size:0.88rem; color:#64748b; line-height:1.45;">
+              Funciona directamente en cualquier navegador (desde GitHub Pages o en tu PC) <strong>sin necesidad de entrar a Antigravity ni escribir comandos</strong>: elegís unidad y tema en desplegables, generás cada etapa con un botón, aprobás con 1 clic e imprimís para el aula.
+            </p>
+            <div style="margin-top:0.75rem; font-size:0.82rem; color:#166534;">
+              ✓ <strong>Ideal si:</strong> querés usar el sistema desde cualquier computadora o celular con cero fricción técnica.
+            </div>
+          </div>
+          <div style="margin-top:1.25rem; font-weight:700; color:#16a34a; font-size:0.9rem;">
+            Ver cómo funciona la Opción 2 ➔
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:0.85rem; color:#64748b; text-align:center;">
+        Hacé clic en cualquiera de las dos tarjetas o continuá con la flecha <strong>→</strong> para verlas en orden.
+      </div>
+    </div>
+
+    <!-- DIAPO 4: OPCIÓN 1 - QUÉ ES -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-a">Opción 1: Solo Chat</span>
+        <h2 class="slide-title">Opción 1: Trabajar directamente en el Chat</h2>
+        <p class="slide-subtitle">El sistema clásico: vivís 100% dentro del entorno de Antigravity sin nada extra.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <strong style="color:#0f172a; font-size:0.95rem;">¿Qué archivos usás?</strong>
+            <p style="font-size:0.85rem; color:#475569; line-height:1.45;">
+              1. <code>entradas/pedido.md</code>: es el único archivo que escribís con el tema de la clase.<br>
+              2. <code>salidas/pedagogo/</code>: donde se guarda el caso.<br>
+              3. <code>salidas/disenador/</code>: donde se guarda la guía.<br>
+              4. <code>salidas/gamificador/</code>: donde se guardan las dinámicas.
+            </p>
+          </div>
+
+          <div class="card highlight">
+            <strong style="color:#166534; font-size:0.95rem;">Comandos directos en el Chat:</strong>
+            <div class="code-box">
+              /1-pedagogo   ➔ Genera el caso<br>
+              /2-disenador  ➔ Genera la guía<br>
+              /3-gamificador ➔ Genera las dinámicas
+            </div>
+          </div>
+        </div>
+
+        <div class="screenshot-box">
+          <div class="screenshot-bar">
+            <span>Conversación en Antigravity</span>
+            <span>Comando directo en el Chat</span>
+          </div>
+          <img src="screenshots/chat_antigravity_aprobado.png" class="screenshot-img" alt="Chat en Antigravity">
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPO 5: OPCIÓN 1 - PASO A PASO -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-a">Opción 1: Solo Chat</span>
+        <h2 class="slide-title">Paso a paso en la Opción 1</h2>
+        <p class="slide-subtitle">Cómo armar tu clase en 4 pasos sin salir de los archivos de texto.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card" style="margin-bottom:0.5rem;">
+            <strong>Paso 1: Escribir el pedido</strong>
+            <p style="font-size:0.83rem; color:#475569;">Abrís <code>entradas/pedido.md</code> en el editor, completás el tema y guardás (Cmd+S).</p>
+          </div>
+          <div class="card" style="margin-bottom:0.5rem;">
+            <strong>Paso 2: Lanzar el Agente 1</strong>
+            <p style="font-size:0.83rem; color:#475569;">En el chat escribís <code>/1-pedagogo</code>. En unos segundos redacta el caso en la carpeta <code>salidas/pedagogo/</code>.</p>
+          </div>
+          <div class="card accent" style="margin-bottom:0.5rem;">
+            <strong>Paso 3: Aprobar a mano el archivo</strong>
+            <p style="font-size:0.83rem; color:#78350f;">
+              Abrís el archivo generado. Buscás en el encabezado la línea:<br>
+              <code>Estado: BORRADOR</code> ➔ La cambiás a <code>Estado: APROBADO</code>.
+            </p>
+          </div>
+          <div class="card highlight">
+            <strong>Paso 4: Repetir con Agentes 2 y 3</strong>
+            <p style="font-size:0.83rem; color:#166534;">Escribís <code>/2-disenador</code>, aprobás a mano, y escribís <code>/3-gamificador</code>.</p>
+          </div>
+        </div>
+
+        <div class="screenshot-box">
+          <div class="screenshot-bar">
+            <span>Control de seguridad en el chat</span>
+            <span>Aviso si no cambiaste el estado a mano</span>
+          </div>
+          <img src="screenshots/chat_antigravity_bloqueo.png" class="screenshot-img" alt="Bloqueo en el chat">
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPO 6: OPCIÓN 1 - EVALUACIÓN -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-a">Opción 1: Solo Chat</span>
+        <h2 class="slide-title">Balance de la Opción 1</h2>
+        <p class="slide-subtitle">¿Cuándo conviene elegir esta modalidad tradicional?</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card highlight">
+          <strong style="color:#15803d; font-size:1.05rem;">✅ Ventajas</strong>
+          <ul style="margin-left:1.25rem; font-size:0.88rem; color:#166534; line-height:1.5;">
+            <li><strong>Una sola ventana:</strong> no tenés que abrir navegadores externos ni tocar scripts de inicio.</li>
+            <li><strong>Cero puertos:</strong> no usa "localhost" ni servidores en segundo plano.</li>
+            <li><strong>Control quirúrgico:</strong> ves exactamente los archivos Markdown tal cual se guardan en el disco.</li>
+          </ul>
+        </div>
+
+        <div class="card accent">
+          <strong style="color:#b45309; font-size:1.05rem;">⚠️ Desventajas para no técnicos</strong>
+          <ul style="margin-left:1.25rem; font-size:0.88rem; color:#78350f; line-height:1.5;">
+            <li>Tenés que navegar el árbol de carpetas para encontrar los archivos.</li>
+            <li>Tenés que cambiar a mano la palabra <code>BORRADOR</code> por <code>APROBADO</code> cada vez.</li>
+            <li>No tiene botón directo de imprimir formateado para fotocopiadora.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="jump-btn" style="padding:0.6rem 1.25rem; font-size:0.9rem;" onclick="irASlide(6)">
+          Ver la Opción 2: Con Gestor Web ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- DIAPO 7: OPCIÓN 2 - QUÉ ES -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-b">Opción 2: Gestor Web Autónomo</span>
+        <h2 class="slide-title">Opción 2: Gestor Web en el Navegador (Online y Offline)</h2>
+        <p class="slide-subtitle">Los 3 agentes integrados en una aplicación web que funciona desde GitHub Pages o en tu PC sin abrir Antigravity.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <strong style="color:#0f172a; font-size:0.95rem;">¿Cómo se accede?</strong>
+            <p style="font-size:0.85rem; color:#475569; line-height:1.45;">
+              Podés entrar desde <strong>cualquier navegador o celular</strong> mediante el link web de <strong>GitHub Pages</strong>, o abrirlo sin Internet en tu computadora con <code>iniciar-panel.bat</code> / doble clic en <code>index.html</code>.
+            </p>
+          </div>
+
+          <div class="card highlight">
+            <strong style="color:#15803d; font-size:0.95rem;">¿Qué incluye esta versión?</strong>
+            <ul style="margin-left:1.25rem; font-size:0.85rem; color:#166534; line-height:1.45;">
+              <li><strong>Doble desplegable dinámico:</strong> elegís la <em>Unidad</em> y el <em>Tema específico</em> sin tipear.</li>
+              <li><strong>Generación directa con botones:</strong> no necesitás copiar comandos ni ir al chat.</li>
+              <li><strong>Aprobación en 1 clic:</strong> botón verde que destraba al agente siguiente.</li>
+              <li><strong>Selector de Impresión:</strong> hoja solo para alumnos (sin respuestas docentes) o guía completa.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="screenshot-box">
+          <div class="screenshot-bar">
+            <span>Gestor Web Docente (GitHub Pages / Local)</span>
+            <span>Panel Interactivo</span>
+          </div>
+          <img src="screenshots/01_tab_pedido.png" class="screenshot-img" alt="Panel de Pedido">
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPO 8: OPCIÓN 2 - PASO A PASO -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-b">Opción 2: Gestor Web Autónomo</span>
+        <h2 class="slide-title">Paso a paso en la Opción 2 (100% desde la Web)</h2>
+        <p class="slide-subtitle">Todo el circuito de los 3 agentes resuelto con botones dentro del navegador.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card" style="margin-bottom:0.5rem;">
+            <span class="tag-pill tag-web">1. Pestaña 1 (Pedido)</span>
+            <p style="font-size:0.83rem; color:#475569;">Elegís la <strong>Unidad</strong> y el <strong>Tema específico</strong> en los dos desplegables y tocás <strong>"✨ Guardar y Generar Caso (Agente 1)"</strong>.</p>
+          </div>
+          <div class="card highlight" style="margin-bottom:0.5rem;">
+            <span class="tag-pill tag-web">2. Pestaña 2 (Pedagogo)</span>
+            <p style="font-size:0.83rem; color:#166534;">Revisás el caso (podés editarlo en vivo), tocás <strong>"✓ Aprobar Caso"</strong> y apretás el botón <strong>"🚀 Generar Guía de Aula (Agente 2)"</strong>.</p>
+          </div>
+          <div class="card highlight" style="margin-bottom:0.5rem;">
+            <span class="tag-pill tag-web">3. Pestañas 3 y 4 (Diseñador y Gamificador)</span>
+            <p style="font-size:0.83rem; color:#166534;">Revisás la guía con los 3 niveles de andamiaje, tocás <strong>"✓ Aprobar Guía"</strong> y apretás <strong>"🚀 Generar 2 Dinámicas (Agente 3)"</strong>.</p>
+          </div>
+          <div class="card" style="margin-bottom:0.5rem;">
+            <span class="tag-pill tag-web">4. Pestaña 5 (Vista de Impresión)</span>
+            <p style="font-size:0.83rem; color:#475569;">Elegís <em>"Guía para Estudiantes (sin respuestas docentes)"</em> y apretás <code>Ctrl+P</code> para imprimir o guardar en PDF.</p>
+          </div>
+        </div>
+
+        <div class="screenshot-box">
+          <div class="screenshot-bar">
+            <span>Pestaña: 2. Caso (Pedagogo)</span>
+            <span>Aprobación y generación con 1 clic</span>
+          </div>
+          <img src="screenshots/02_tab_pedagogo.png" class="screenshot-img" alt="Caso con botón de aprobar">
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPO 9: OPCIÓN 2 - VISTA DE IMPRESIÓN -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-opcion-b">Opción 2: Con Gestor Web</span>
+        <h2 class="slide-title">El producto final: Listo para la fotocopiadora</h2>
+        <p class="slide-subtitle">La pestaña 5 formatea automáticamente la hoja de actividades de los estudiantes.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card highlight" style="margin-bottom:1rem;">
+            <strong style="color:#15803d; font-size:1rem;">🖨️ Presionás Cmd+P (o Ctrl+P):</strong>
+            <ul style="margin-left:1.25rem; font-size:0.85rem; color:#166534; line-height:1.5;">
+              <li>Oculta automáticamente barras de navegación y botones.</li>
+              <li>Encabezado escolar oficial: <em>"Elementos de micro y macroeconomía · 5.º año"</em>.</li>
+              <li>Espacio para nombres de estudiantes y fecha.</li>
+              <li>Contiene solo las consignas del caso; las respuestas y pautas docentes no aparecen.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <p style="font-size:0.85rem; color:#475569;">
+              Guardalo en PDF para enviar por Classroom o llevalo directo a imprimir.
+            </p>
+          </div>
+        </div>
+
+        <div class="screenshot-box">
+          <div class="screenshot-bar">
+            <span>Pestaña: 5. Vista de Impresión</span>
+            <span>Hoja de trabajo limpia A4</span>
+          </div>
+          <img src="screenshots/05_tab_imprimir.png" class="screenshot-img" alt="Vista de Impresión">
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPO 10: COMPARATIVA FINAL -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-cierre">3. Comparativa y Decisión</span>
+        <h2 class="slide-title">¿Cuál alternativa te conviene elegir?</h2>
+        <p class="slide-subtitle">Una tabla frente a frente para que cada colega decida según su comodidad.</p>
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:0.88rem; margin:0.75rem 0;">
+        <thead>
+          <tr style="background:#f1f5f9; text-align:left; border-bottom:2px solid #cbd5e1;">
+            <th style="padding:0.6rem 0.85rem;">Dimensión</th>
+            <th style="padding:0.6rem 0.85rem; color:#0f172a;">💬 Opción 1: Solo Chat</th>
+            <th style="padding:0.6rem 0.85rem; color:#15803d;">🌐 Opción 2: Chat + Gestor Web</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <td style="padding:0.6rem 0.85rem; font-weight:600;">¿Dónde trabajás?</td>
+            <td style="padding:0.6rem 0.85rem;">100% dentro de Antigravity.</td>
+            <td style="padding:0.6rem 0.85rem;"><strong>100% en cualquier navegador web</strong> (online desde GitHub Pages o local en tu PC, sin abrir Antigravity).</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e2e8f0; background:#fafafa;">
+            <td style="padding:0.6rem 0.85rem; font-weight:600;">¿Cómo cargás el pedido?</td>
+            <td style="padding:0.6rem 0.85rem;">Editando el archivo <code>pedido.md</code> a mano.</td>
+            <td style="padding:0.6rem 0.85rem;">Eligiendo <strong>Unidad</strong> y <strong>Tema específico</strong> en dos menús desplegables.</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <td style="padding:0.6rem 0.85rem; font-weight:600;">¿Cómo generás y aprobás?</td>
+            <td style="padding:0.6rem 0.85rem;">Escribiendo <code>/1-pedagogo</code> y cambiando a mano <code>BORRADOR</code> a <code>APROBADO</code>.</td>
+            <td style="padding:0.6rem 0.85rem;">Tocando los botones <strong>"✨ Generar"</strong> y <strong>"✓ Aprobar"</strong> con un clic en la web.</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e2e8f0; background:#fafafa;">
+            <td style="padding:0.6rem 0.85rem; font-weight:600;">¿Cómo imprimís para el aula?</td>
+            <td style="padding:0.6rem 0.85rem;">Copiando el texto a un procesador para darle formato.</td>
+            <td style="padding:0.6rem 0.85rem;">Con <code>Ctrl+P</code> en la pestaña de Impresión (oculta las respuestas docentes).</td>
+          </tr>
+          <tr>
+            <td style="padding:0.6rem 0.85rem; font-weight:600;">Perfil recomendado</td>
+            <td style="padding:0.6rem 0.85rem;">Colegas que trabajan dentro del editor de Antigravity.</td>
+            <td style="padding:0.6rem 0.85rem;"><strong>Recomendada para todos:</strong> funciona desde un link web en cualquier dispositivo.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card accent" style="text-align:center; padding:0.6rem 1rem;">
+        <span style="font-size:0.85rem; color:#78350f;">
+          🤝 <strong>Doble disponibilidad:</strong> Podés usar el Gestor Web tanto online desde el link de GitHub Pages como offline en tu computadora.
+        </span>
+      </div>
+    </div>
+
+    <!-- DIAPO 11: CÓMO SE DISTRIBUYE AL EQUIPO (GITHUB PAGES / DRIVE / ZIP) -->
+    <div class="slide">
+      <div>
+        <span class="slide-badge badge-cierre">4. Implementación y Acceso</span>
+        <h2 class="slide-title">Acceso Online (GitHub Pages) y Carpetas Locales</h2>
+        <p class="slide-subtitle">Preparado para usarse desde cualquier navegador en Internet o descargarse en la computadora.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <strong style="font-size:1rem; color:#0f172a;">📁 Estructura del proyecto:</strong>
+          <div class="code-box" style="font-size:0.78rem;">
+            📂 Proyecto-TTE-Economia-5to/<br>
+            ├── 🌐 index.html (Portal web principal p/ GitHub Pages)<br>
+            ├── 📊 Presentacion_Diapositivas.html (estas diapositivas)<br>
+            ├── 📄 Memoria_Opcion1 y Memoria_Opcion2 (.md y .html)<br>
+            ├── 📂 SUBIR_A_INTERNET/ (versión web plana lista p/ GitHub)<br>
+            ├── 📂 Opcion-1-Solo-Agentes-Chat/<br>
+            └── 📂 Opcion-2-Agentes-Con-Gestor-Web/<br>
+                ├── 🚀 iniciar-panel.bat (Windows) / .command (Mac)<br>
+                ├── 📂 panel/ (index.html + generador.js + servidor)<br>
+                └── 📂 agentes/, materiales/, entradas/ y salidas/
+          </div>
+        </div>
+
+        <div>
+          <div class="card highlight" style="margin-bottom:0.75rem;">
+            <strong style="color:#166534; font-size:0.95rem;">🌐 1. Uso Online directo (GitHub Pages):</strong>
+            <p style="font-size:0.85rem; color:#166534; line-height:1.45;">
+              Entrando al link web desde cualquier navegador o celular, el docente accede al Portal Principal, abre el Gestor Web, genera el caso, la guía y las dinámicas con un clic e imprime en PDF sin instalar nada.
+            </p>
+          </div>
+
+          <div class="card accent">
+            <strong style="color:#b45309; font-size:0.95rem;">💻 2. Uso Offline en la PC (Local o Antigravity):</strong>
+            <p style="font-size:0.85rem; color:#78350f;">
+              Descargando el paquete ZIP, funciona 100% sin Internet tanto desde el navegador (con <code>iniciar-panel.bat</code> o abriendo <code>index.html</code>) como dentro del chat de Antigravity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Controls -->
+  <div class="controls">
+    <button class="btn-nav" onclick="cambiarSlide(-1)">◀ Anterior</button>
+    <div class="progress-info" id="slideIndicator">Diapositiva 1 de 11</div>
+    <button class="btn-nav" onclick="cambiarSlide(1)">Siguiente ▶</button>
+  </div>
+
+  <script>
+    let slideActual = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const indicator = document.getElementById('slideIndicator');
+
+    function mostrarSlide(indice) {
+      if (indice < 0) indice = 0;
+      if (indice >= totalSlides) indice = totalSlides - 1;
+      slideActual = indice;
+
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === slideActual);
+      });
+
+      indicator.textContent = `Diapositiva ${slideActual + 1} de ${totalSlides}`;
+    }
+
+    function cambiarSlide(direccion) {
+      mostrarSlide(slideActual + direccion);
+    }
+
+    function irASlide(indice) {
+      mostrarSlide(indice);
+    }
+
+    // Navegación con teclado
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        cambiarSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        cambiarSlide(-1);
+      }
+    });
+
+    mostrarSlide(0);
+  </script>
+</body>
+</html>
