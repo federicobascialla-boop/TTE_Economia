@@ -705,6 +705,158 @@ function obtenerFechaHoy() {
 }
 
 /**
+ * Analiza el pedido del docente para extraer los minutos reales, calcular tiempos
+ * proporcionales exactos y detectar pedidos absurdos, inviables o contradictorios
+ * (cumpliendo la regla de No Complacencia de AGENTS.md).
+ */
+function analizarYValidarPedido(pedidoParsed) {
+  const tiempoRaw = (pedidoParsed['Tiempo disponible'] || '1 clase de 80 minutos').trim();
+  const modalidadRaw = (pedidoParsed['Modalidad'] || 'trabajo en grupos de 4').trim();
+  const restriccionesRaw = (pedidoParsed['Restricciones'] || 'sin computadoras en el aula; hay proyector').trim();
+  const observacionesRaw = (pedidoParsed['Observaciones'] || '').trim();
+  const unidadTemaRaw = (pedidoParsed['Unidad y tema'] || '').trim();
+
+  const tLower = tiempoRaw.toLowerCase();
+  let minutosTotales = 80;
+
+  // 1. Detectar si dice segundos
+  const mSeg = tLower.match(/(\d+)\s*seg/);
+  // 2. Detectar explícitamente "X min" o "X minutos" (ej. "1 clase de 10 minutos" -> 10)
+  const mMin = tLower.match(/(\d+)\s*min/);
+  // 3. Detectar "X hora(s) catedra" (1 hora cátedra = 40 min)
+  const mHoraCat = tLower.match(/(\d+)\s*hora[s]?\s*c[aá]tedra/);
+  // 4. Detectar "X modulo(s)" (1 módulo = 80 min)
+  const mModulo = tLower.match(/(\d+)\s*m[oó]dulo/);
+  // 5. Detectar "X hora(s)" reloj
+  const mHora = tLower.match(/(\d+)\s*hora/);
+  // 6. Detectar multiplicador de clases (ej. "2 clases de 40 min")
+  const mClases = tLower.match(/(\d+)\s*clases?\s+de\s+(\d+)\s*min/);
+
+  if (mSeg && !mMin && !mHora) {
+    minutosTotales = 1;
+  } else if (mClases) {
+    minutosTotales = parseInt(mClases[1], 10) * parseInt(mClases[2], 10);
+  } else if (mMin) {
+    minutosTotales = parseInt(mMin[1], 10);
+  } else if (mHoraCat) {
+    minutosTotales = parseInt(mHoraCat[1], 10) * 40;
+  } else if (mModulo) {
+    minutosTotales = parseInt(mModulo[1], 10) * 80;
+  } else if (mHora) {
+    minutosTotales = parseInt(mHora[1], 10) * 60;
+  } else {
+    const mNum = tLower.match(/(\d+)/);
+    if (mNum) {
+      const n = parseInt(mNum[1], 10);
+      minutosTotales = n <= 4 ? n * 80 : n;
+    }
+  }
+
+  if (isNaN(minutosTotales) || minutosTotales < 1) {
+    minutosTotales = 1;
+  }
+
+  const alertas = [];
+  let tiempoInviable = false;
+
+  // Regla 1: Tiempo insuficiente o absurdo (< 30 min)
+  if (minutosTotales < 30) {
+    tiempoInviable = true;
+    alertas.push(
+      `**Tiempo insuficiente o inviable (\`${tiempoRaw}\` = ${minutosTotales} min):** En 5.° año de nivel secundario no es pedagógicamente viable desarrollar un caso de estudio completo, discusión grupal con andamiaje y puesta en común en solo **${minutosTotales} minutos** (el bloque mínimo escolar es de 40 min / 1 hora cátedra, u 80 min / 1 módulo). Siguiendo el criterio de **no complacencia** de \`AGENTS.md\`, **no voy a proponerte una exposición de 15 minutos que supere tu tiempo total**: reajusté los tiempos a una **micro-intervención de emergencia de exactamente ${minutosTotales} minutos** y te sugiero corregir el tiempo a 40 u 80 minutos en la Pestaña 1 si deseás una clase completa.`
+    );
+  } else if (minutosTotales > 240) {
+    alertas.push(
+      `**Duración excesiva para un único bloque (\`${tiempoRaw}\` = ${minutosTotales} min):** Ningún grupo de adolescentes de 15 a 17 años sostiene la atención activa durante ${minutosTotales} minutos continuos. Te recomiendo fragmentar esta secuencia en bloques de 80 minutos.`
+    );
+  }
+
+  // Regla 2: Tamaño de grupos absurdo
+  const mGrupoNum = modalidadRaw.toLowerCase().match(/grupos?\s+de\s+(\d+)/);
+  if (mGrupoNum) {
+    const cantIntegrantes = parseInt(mGrupoNum[1], 10);
+    if (cantIntegrantes > 6) {
+      alertas.push(
+        `**Tamaño de grupo antipedagógico (\`${modalidadRaw}\`):** Armar grupos de **${cantIntegrantes} estudiantes** en secundaria diluye la responsabilidad individual (efecto *free-rider* o pasividad de la mayoría). Como par pedagógico te recomiendo dividirlos en equipos de **3 a 4 integrantes**.`
+      );
+    } else if (cantIntegrantes <= 1) {
+      alertas.push(
+        `**Contradicción en modalidad (\`${modalidadRaw}\`):** Indicaste "grupos de ${cantIntegrantes}", lo cual equivale a trabajo individual. Definí si preferís **trabajo individual** o **parejas / grupos de 3 a 4**.`
+      );
+    }
+  }
+
+  // Regla 3: Contradicción entre restricciones de aula y pedido tecnológico
+  const rLower = restriccionesRaw.toLowerCase();
+  const modObsLower = (modalidadRaw + ' ' + observacionesRaw).toLowerCase();
+  if (
+    (rLower.includes('sin computadora') || rLower.includes('sin pc') || rLower.includes('sin internet') || rLower.includes('sin celular')) &&
+    (modObsLower.includes('kahoot') || modObsLower.includes('excel') || modObsLower.includes('computadora') || modObsLower.includes('online') || modObsLower.includes('buscar en internet'))
+  ) {
+    alertas.push(
+      `**Contradicción de recursos detectada:** En *Restricciones* indicaste **"${restriccionesRaw}"**, pero en el pedido mencionaste actividades digitales/online. Respetando la restricción real de tu aula, diseñé todo para trabajar **100 % en papel y pizarrón**.`
+    );
+  }
+
+  // Regla 4: Pedido de puntajes/competencia en tema sensible (Dictadura / Deuda 1976-1983)
+  if (
+    (unidadTemaRaw.toLowerCase().includes('dictadura') || unidadTemaRaw.toLowerCase().includes('1976')) &&
+    (modObsLower.includes('puntos') || modObsLower.includes('premio') || modObsLower.includes('trivia') || modObsLower.includes('kahoot'))
+  ) {
+    alertas.push(
+      `**Límite ético obligatorio (\`AGENTS.md\`):** Para el proyecto *"La deuda externa y la dictadura militar (1976-1983)"*, las reglas del equipo prohíben expresamente dinámicas de puntos, premios o trivias competitivas. Se estructura mediante análisis documental y debate guiado en el marco de *Memoria, Verdad y Justicia*.`
+    );
+  }
+
+  // Cálculo matemático proporcional de los tiempos para que SIEMPRE sumen minutosTotales
+  let minApertura, minDesarrollo, minCierre;
+  if (minutosTotales <= 5) {
+    minApertura = 1;
+    minDesarrollo = Math.max(1, minutosTotales - 2);
+    minCierre = Math.max(0, minutosTotales - minApertura - minDesarrollo);
+  } else if (minutosTotales < 30) {
+    minApertura = Math.max(2, Math.round(minutosTotales * 0.2));
+    minDesarrollo = Math.max(3, Math.round(minutosTotales * 0.5));
+    minCierre = Math.max(1, minutosTotales - minApertura - minDesarrollo);
+  } else {
+    minApertura = Math.max(5, Math.round(minutosTotales * 0.1875));    // ej. 80 -> 15 min | 40 -> 8 min
+    minDesarrollo = Math.max(15, Math.round(minutosTotales * 0.5625)); // ej. 80 -> 45 min | 40 -> 22 min
+    minCierre = Math.max(5, minutosTotales - minApertura - minDesarrollo); // ej. 80 -> 20 min | 40 -> 10 min
+  }
+
+  const minCheck1 = Math.max(1, Math.round(minDesarrollo * 0.33));
+  const minCheck2 = Math.max(2, Math.round(minDesarrollo * 0.67));
+
+  // Tiempos para el Gamificador (nunca mayores a minutosTotales)
+  const minJuegoTotal = minutosTotales <= 45 ? minutosTotales : Math.round(minutosTotales * 0.5);
+  const minRonda1 = Math.max(1, Math.round(minJuegoTotal * 0.3));
+  const minRonda2 = Math.max(2, Math.round(minJuegoTotal * 0.5));
+  const minRonda3 = Math.max(1, minJuegoTotal - minRonda1 - minRonda2);
+  const minCortePrevencion = Math.max(1, Math.min(10, Math.round(minJuegoTotal * 0.2)));
+
+  const bloqueAlertasMarkdown = alertas.length > 0
+    ? `\n> ### ⚠️ Freno y Observación Crítica del Agente (Regla de No Complacencia — \`AGENTS.md\`)\n>\n${alertas.map(a => `> - ${a}`).join('\n')}\n\n---\n`
+    : '';
+
+  return {
+    minutosTotales,
+    tiempoInviable,
+    alertas,
+    bloqueAlertasMarkdown,
+    minApertura,
+    minDesarrollo,
+    minCierre,
+    minCheck1,
+    minCheck2,
+    minJuegoTotal,
+    minRonda1,
+    minRonda2,
+    minRonda3,
+    minCortePrevencion
+  };
+}
+
+/**
  * AGENTE 1: Genera el documento Markdown del Pedagogo / Casista
  */
 function generarPedagogo(pedidoParsed) {
@@ -718,6 +870,7 @@ function generarPedagogo(pedidoParsed) {
   const observaciones = (pedidoParsed['Observaciones'] && pedidoParsed['Observaciones'] !== '(opcional)') ? pedidoParsed['Observaciones'] : '';
 
   const p = seleccionarPlantilla(unidadTema);
+  const v = analizarYValidarPedido(pedidoParsed);
   const fecha = obtenerFechaHoy();
   const citaBiblio = (_BIBLIOGRAFIA && typeof _BIBLIOGRAFIA.obtenerCitaPorUnidad === 'function')
     ? _BIBLIOGRAFIA.obtenerCitaPorUnidad(p.unidad)
@@ -727,6 +880,21 @@ function generarPedagogo(pedidoParsed) {
     ? `\n> **Adaptación especial a tus observaciones docentes:** Se incorporó tu pedido de *"${observaciones}"* y se cuidó expresamente evitar *"${evitar}"*.`
     : `\n> **Cuidado metodológico del pedido:** Se diseñó la situación para superar la dificultad detectada (*"${cuesta}"*) respetando la restricción de aula (*"${restricciones}"*) y evitando *"${evitar}"*.`;
 
+  const textoEnfoques = v.tiempoInviable
+    ? `- **Opción A de Emergencia (Micro-disparador inductivo en ${v.minutosTotales} min totales):**
+  - *Distribución exacta (${v.minutosTotales} min):* **${v.minApertura} min** para leer o proyectar solo el nudo del caso *"${p.tituloCaso}"* sin introducción teórica + **${v.minDesarrollo} min** de reacción rápida a mano alzada sobre la Pregunta de Nivel 1 + **${v.minCierre} min** para dejar planteada la incógnita que resolverán en la clase siguiente.
+  - *Cuándo conviene:* Únicamente si tenés **${v.minutosTotales} minutos reales** antes del timbre y querés dejar instalado el conflicto cognitivo como gancho para la próxima clase.
+
+- **Opción B Recomendada por el Agente (Reencuadrar a 1 hora cátedra de 40 min o 1 módulo de 80 min):**
+  - *Por qué te la propongo:* Para que los estudiantes de **${curso}** puedan calcular los datos del caso, debatir en **${modalidad}** y desarmar la idea errónea (*"${p.ideaErronea}"*), necesitás al menos **40 a 80 minutos**. Volvé a la Pestaña 1, cambiá el tiempo disponible y regenerá el caso para obtener la secuencia completa.`
+    : `- **Enfoque 1 (Inductivo — partir de la situación para llegar al concepto en ${v.minutosTotales} min):**
+  - *Dinámica (${v.minApertura} min apertura + ${v.minDesarrollo} min desarrollo + ${v.minCierre} min cierre = ${v.minutosTotales} min):* Presentar el caso *"${p.tituloCaso}"* durante los primeros **${v.minApertura} minutos** (${restricciones}) sin adelantar la definición formal. Destinar **${v.minDesarrollo} minutos** para que en **${modalidad}** respondan las preguntas de Nivel 1 y 2 a partir de los datos del relato, y cerrar en los últimos **${v.minCierre} minutos** formalizando el concepto en el pizarrón.
+  - *Cuándo conviene:* Ideal para **${curso}** cuando notás que "${cuesta}", ya que evita que respondan repitiendo de memoria y los involucra desde un dilema concreto.
+
+- **Enfoque 2 (Deductivo — partir del marco conceptual para analizar el caso en ${v.minutosTotales} min):**
+  - *Dinámica (${v.minApertura} min encuadre + ${v.minDesarrollo} min aplicación + ${v.minCierre} min puesta en común = ${v.minutosTotales} min):* Abrir con un encuadre dialogado breve de **${v.minApertura} minutos** apoyado en la analogía cotidiana y desarmando la idea errónea inicial. Luego destinar **${v.minDesarrollo} minutos** al trabajo grupal sobre el caso y **${v.minCierre} minutos** al debate plenario de la pregunta de Nivel 3.
+  - *Cuándo conviene:* Recomendable si querés asegurar que todos los grupos manejen el vocabulario específico antes de leer los datos del caso.`;
+
   return `Agente: Pedagogo / Casista
 Fecha: ${fecha}
 Pedido: ${unidadTema} (${tiempo}, ${modalidad}, ${curso})
@@ -735,13 +903,13 @@ Fuentes usadas: materiales/planificacion.md; ${citaBiblio}; entradas/pedido.md
 Estado: BORRADOR
 
 ---
-
+${v.bloqueAlertasMarkdown}
 ## 1. Ficha técnica y pedagógica
 
 - **Unidad y tema seleccionado:** ${unidadTema}
 - **Contenidos de la planificación:** ${p.contenidos}
 - **Bibliografía de referencia por unidad (según \`materiales/bibliografia.md\`):** ${citaBiblio}
-- **Destinatarios y organización:** ${curso} · **Tiempo:** ${tiempo} · **Modalidad:** ${modalidad}.
+- **Destinatarios y organización:** ${curso} · **Tiempo solicitado:** ${tiempo} (${v.minutosTotales} min) · **Modalidad:** ${modalidad}.
 - **Condiciones de aula consideradas:** ${restricciones}.
 - **Expectativas de logro vinculadas:**
 ${p.expectativas.map(e => `  - *${e}*`).join('\n')}
@@ -777,23 +945,17 @@ ${p.preguntasNivel3.map(q => `  - ${q}`).join('\n')}
 
 ---
 
-## 5. Dos enfoques posibles para llevar el caso al aula (${tiempo})
+## 5. Dos enfoques posibles para llevar el caso al aula (ajustados a ${v.minutosTotales} minutos)
 
-- **Enfoque 1 (Inductivo — partir de la situación para llegar al concepto):**
-  - *Dinámica:* Presentar el caso *"${p.tituloCaso}"* al inicio de la clase (${restricciones}) sin adelantar la definición formal. Pedir que en **${modalidad}** respondan las preguntas de Nivel 1 y 2 a partir de los datos del relato. Luego, usar sus propias conclusiones en la puesta en común para formalizar el concepto en el pizarrón.
-  - *Cuándo conviene:* Ideal para **${curso}** cuando notás que "${cuesta}", ya que evita que respondan repitiendo de memoria y los involucra desde un dilema concreto.
-
-- **Enfoque 2 (Deductivo — partir del marco conceptual para analizar el caso):**
-  - *Dinámica:* Abrir con una exposición dialogada breve (15 minutos) apoyada en la analogía cotidiana y desarmando la idea errónea inicial. Luego entregar el caso para que los grupos apliquen las categorías teóricas, completen los cálculos y debatan la pregunta de Nivel 3.
-  - *Cuándo conviene:* Recomendable si querés asegurar que todos los grupos manejen el vocabulario específico antes de leer los datos del caso.
+${textoEnfoques}
 
 ---
 
 ## 6. Decisiones para el docente
 
-1. **Revisión y aprobación del caso:** Verificá si los montos marcados con \`[DATO FICTICIO]\` (o \`[VERIFICAR]\`) te resultan cómodos para trabajar en el pizarrón con tu curso; podés modificarlos con el botón **"✏️ Modo Edición"** o hacer clic directamente en **"✓ Aprobar Caso"** para habilitar al Agente 2 (Diseñador Didáctico).
-2. **Elección de enfoque de apertura:** Definir si empezarás la clase de **${tiempo}** con la lectura inductiva del caso o con los 15 minutos de encuadre conceptual en el pizarrón.
-3. **Énfasis del cierre:** Decidir cuánto peso darle en la puesta en común al cálculo numérico/analítico (Nivel 2) frente al debate de perspectivas e intereses sociales contrapuestos (Nivel 3).
+1. **Validación de tiempos y datos:** ${v.tiempoInviable ? `⚠️ Dado que cargaste **${tiempo}** (${v.minutosTotales} min), decidí primero si vas a usar este caso como **micro-disparador de ${v.minutosTotales} minutos** (dejando la guía de resolución para la clase siguiente) o si preferís corregir el tiempo a **40 u 80 minutos** en la Pestaña 1.` : `Verificá si el desglose de **${v.minApertura} min + ${v.minDesarrollo} min + ${v.minCierre} min (total ${v.minutosTotales} min)** y los montos marcados con \`[DATO FICTICIO]\` te resultan cómodos para trabajar en el pizarrón con tu curso.`}
+2. **Elección de enfoque de apertura:** Definir cuál de los dos enfoques del punto 5 se adapta mejor al ánimo del grupo ese día.
+3. **Énfasis del cierre:** Decidir cuánto peso darle en los **${v.minCierre} minutos** finales al cálculo numérico/analítico (Nivel 2) frente al debate de perspectivas e intereses sociales contrapuestos (Nivel 3).
 `;
 }
 
@@ -808,11 +970,16 @@ function generarDisenador(pedidoParsed, pedagogoFilename) {
   const restricciones = pedidoParsed['Restricciones'] || 'sin computadoras en el aula; hay proyector';
 
   const p = seleccionarPlantilla(unidadTema);
+  const v = analizarYValidarPedido(pedidoParsed);
   const fecha = obtenerFechaHoy();
 
   const headerRow = `| ${p.tablaHeaders.join(' | ')} |`;
   const sepRow = `|${p.tablaHeaders.map(() => '---').join('|')}|`;
   const bodyRows = p.tablaFilas.map(row => `| ${row.join(' | ')} |`).join('\n');
+
+  const notaTiempoDisenador = v.tiempoInviable
+    ? `> **⚠️ Nota del Diseñador Didáctico sobre el tiempo (${v.minutosTotales} min):** Como aprobaste el caso manteniendo un tiempo en aula de solo **${v.minutosTotales} minutos**, estructuré el cronograma como **Actividad Express de ${v.minutosTotales} min (${v.minApertura} min presentación + ${v.minDesarrollo} min Paso 1 en clase + ${v.minCierre} min consigna domiciliaria)** para que los Pasos 2, 3 y 4 se completen como tarea o en la clase siguiente.`
+    : '';
 
   return `Agente: Diseñador Didáctico
 Fecha: ${fecha}
@@ -822,17 +989,18 @@ Fuentes usadas: salidas/pedagogo/${pedagogoFilename} (Estado: APROBADO); materia
 Estado: BORRADOR
 
 ---
-
+${v.bloqueAlertasMarkdown}
 ## 1. Datos de la actividad
 
 - **Materia:** Elementos de micro y macroeconomía (${curso}).
 - **Unidad y Tema:** ${unidadTema}.
-- **Duración estimada:** ${tiempo}.
-  - *Apertura (15 min):* Lectura compartida del caso *"${p.tituloCaso}"* y organización en **${modalidad}**.
-  - *Desarrollo grupal (45 min):* Resolución paso a paso de la guía con acompañamiento docente por las mesas.
-  - *Puesta en común y cierre (20 min):* Contraste de resultados en pizarrón y entrega del producto final del equipo.
+- **Duración total ajustada exactamente al pedido:** ${tiempo} (**${v.minutosTotales} minutos totales**).
+  - *Apertura (${v.minApertura} min):* Lectura compartida del caso *"${p.tituloCaso}"* y organización en **${modalidad}**.
+  - *Desarrollo (${v.minDesarrollo} min):* ${v.tiempoInviable ? `Resolución en aula del Paso 1 (cuadro de datos) y planteo de dudas iniciales.` : `Resolución paso a paso de la guía con acompañamiento docente por las mesas.`}
+  - *Puesta en común y cierre (${v.minCierre} min):* ${v.tiempoInviable ? `Puesta en común rápida del cuadro y asignación de los Pasos 2 a 4 para la clase siguiente.` : `Contraste de resultados en pizarrón y entrega del producto final del equipo.`}
 - **Modalidad:** ${modalidad} (roles sugeridos: coordinador/a de lectura, responsable de datos y tabla, redactor/a de argumentos y vocero/a para el plenario).
 - **Recursos y condiciones de aula:** ${restricciones}. 1 guía impresa por equipo (podés imprimirla desde la pestaña **"🖨️ 5. Vista de Impresión"**), carpeta y pizarrón.
+${notaTiempoDisenador}
 
 ---
 
@@ -913,17 +1081,17 @@ ${p.resolucionDocente.map((item, idx) => `${idx + 1}. ${item}`).join('\n\n')}
 ### Errores frecuentes y cómo intervenir en las mesas
 - **Error frecuente:** ${p.ideaErronea}
 - **Intervención sugerida:** No dar la respuesta cerrada; pedir al grupo que mire la fila comparativa del cuadro del Paso 1 y contrastar su intuición inicial con el resultado obtenido.
-- **Qué mirar durante los 45 minutos de trabajo grupal:**
-  - En los primeros 15 minutos, verificar que todos los grupos hayan logrado completar las celdas vacías del cuadro del Paso 1 (si un grupo se traba, ofrecer la pista del **Nivel A — Con apoyo**).
-  - A los 30 minutos, revisar que en el Paso 4 estén usando vocabulario específico de la unidad y no solo opiniones generales sin sustento en el caso.
+- **Qué mirar durante los ${v.minDesarrollo} minutos de desarrollo en aula:**
+  - Al minuto **${v.minCheck1}**, verificar que los grupos hayan logrado ubicar los datos en el cuadro del Paso 1 (si un grupo se traba, ofrecer la pista del **Nivel A — Con apoyo**).
+  - Al minuto **${v.minCheck2}**, revisar que estén aplicando el vocabulario específico de la unidad y no solo opiniones generales sin sustento en los datos del caso.
 
 ---
 
 ## 6. Decisiones para el docente
 
-1. **Aprobación de la guía:** Si la secuencia de 4 pasos y los niveles de andamiaje se ajustan a tu grupo, hacé clic en **"✓ Aprobar Guía"** para habilitar al Agente 3 (Gamificador) y la versión limpia en **"🖨️ 5. Vista de Impresión"**.
+1. **Aprobación de la guía:** Si la secuencia de pasos y el desglose de **${v.minutosTotales} minutos (${v.minApertura} + ${v.minDesarrollo} + ${v.minCierre} min)** se ajustan a tu grupo, hacé clic en **"✓ Aprobar Guía"** para habilitar al Agente 3 (Gamificador) y la versión limpia en **"🖨️ 5. Vista de Impresión"**.
 2. **Andamiaje impreso o oral:** Definir si incluirás el recuadro de *"Nivel A — Con apoyo"* impreso en la hoja de todos los grupos o si lo tendrás en tu escritorio para acercarlo únicamente a las mesas que lo necesiten.
-3. **Instrumento de evaluación:** Decidir si el Producto Final del Paso 4 se recogerá al terminar los **${tiempo}** como nota de seguimiento formativo grupal o si será la base oral para la puesta en común.
+3. **Instrumento de evaluación:** Decidir si el Producto Final del Paso 4 se recogerá al terminar los **${v.minutosTotales} minutos** (o en la clase siguiente si optaste por modalidad corta) como seguimiento formativo grupal.
 `;
 }
 
@@ -938,6 +1106,7 @@ function generarGamificador(pedidoParsed, pedagogoFilename, disenadorFilename) {
   const restricciones = pedidoParsed['Restricciones'] || 'sin computadoras en el aula; hay proyector';
 
   const p = seleccionarPlantilla(unidadTema);
+  const v = analizarYValidarPedido(pedidoParsed);
   const fecha = obtenerFechaHoy();
 
   const notaEtica = p.esTemaSensible
@@ -952,7 +1121,7 @@ Fuentes usadas: salidas/disenador/${disenadorFilename} (Estado: APROBADO); salid
 Estado: BORRADOR
 
 ---
-${notaEtica}
+${v.bloqueAlertasMarkdown}${notaEtica}
 
 ## Propuesta 1: "${p.juego1Nombre}"
 
@@ -960,16 +1129,16 @@ ${notaEtica}
 - **Nombre de la dinámica:** *${p.juego1Nombre}*
 - **Objetivo de aprendizaje:** Poner en acción los conceptos de **${unidadTema}** a partir del caso *"${p.tituloCaso}"*, promoviendo la argumentación económica con datos, el trabajo colaborativo y el reconocimiento de distintos actores e intereses (**${p.expectativas[0]}**).
 
-### 2. Mecánica, roles y rondas
+### 2. Mecánica, roles y rondas (ajustadas a ${v.minJuegoTotal} minutos)
 - **Organización del aula:** Se respeta la estructura de **${modalidad}** para no perder tiempo reacomodando todo el salón.
 - **Desarrollo de la dinámica:** ${p.juego1Mecanica}
-- **Rondas cronometradas:**
-  - *Ronda 1 — Preparación de argumentos y datos (12 min):* Cada equipo revisa el cuadro de datos de la guía y prepara su postura técnica.
-  - *Ronda 2 — Intercambio y negociación / audiencia (20 min):* Se desarrolla el debate estructurado donde cada intervención debe citar al menos un dato o relación económica del caso.
-  - *Ronda 3 — Consenso o dictamen final (8 min):* Redacción de la resolución grupal en una carilla o afiche breve.
+- **Rondas cronometradas (Total: ${v.minJuegoTotal} min):**
+  - *Ronda 1 — Preparación de argumentos y datos (${v.minRonda1} min):* Cada equipo revisa el cuadro de datos de la guía y prepara su postura técnica.
+  - *Ronda 2 — Intercambio y negociación / audiencia (${v.minRonda2} min):* Se desarrolla el debate estructurado donde cada intervención debe citar al menos un dato o relación económica del caso.
+  - *Ronda 3 — Consenso o dictamen final (${v.minRonda3} min):* Redacción o votación de la resolución grupal.
 
 ### 3. Material y tiempo
-- **Duración:** 40 minutos (puede implementarse en la segunda mitad de la clase de **${tiempo}** o en el bloque siguiente).
+- **Duración ajustada:** **${v.minJuegoTotal} minutos** (${v.tiempoInviable ? `versión relámpago ajustada a tu límite de ${v.minutosTotales} min; para versión extendida se recomienda un bloque de 40 a 80 min` : `integrable dentro de tu planificación de ${tiempo}`}).
 - **Materiales necesarios:** Solo pizarrón, hojas de carpeta y la guía ya trabajada (adaptado 100% a tu condición: *${restricciones}*).
 
 ### 4. Puente con el concepto económico
@@ -992,16 +1161,16 @@ ${notaEtica}
 - **Nombre de la dinámica:** *${p.juego2Nombre}*
 - **Objetivo de aprendizaje:** Visualizar de manera práctica y participativa el mecanismo económico detrás de **${unidadTema}**, facilitando que un grupo de **${curso}** comprenda las relaciones causales antes o después de la formalización escrita.
 
-### 2. Mecánica y secuencia paso a paso
+### 2. Mecánica y secuencia paso a paso (ajustada a ${v.minJuegoTotal} minutos)
 - **Dinámica:** ${p.juego2Mecanica}
-- **Secuencia en el aula:**
-  - *Paso 1 (10 min):* El docente plantea en el pizarrón las reglas y el escenario inicial del caso *"${p.tituloCaso}"*.
-  - *Paso 2 (15 min):* Ejecución de las dos rondas comparativas (situación inicial vs. cambio de condiciones económicas) con registro rápido por mesa.
-  - *Paso 3 (15 min):* Volcado de resultados en el pizarrón y construcción colectiva de la conclusión teórica.
+- **Secuencia en el aula (Total: ${v.minJuegoTotal} min):**
+  - *Paso 1 (${v.minRonda1} min):* El docente plantea en el pizarrón las reglas y el escenario inicial del caso *"${p.tituloCaso}"*.
+  - *Paso 2 (${v.minRonda2} min):* Ejecución de las rondas comparativas (situación inicial vs. cambio de condiciones económicas) con registro rápido por mesa.
+  - *Paso 3 (${v.minRonda3} min):* Volcado de resultados en el pizarrón y construcción colectiva de la conclusión teórica.
 
 ### 3. Material y tiempo
-- **Duración:** 40 minutos.
-- **Materiales:** Pizarrón/proyector (${restricciones}) y tarjetas de papel o registro en cuaderno por grupo de 4. Cero requerimiento de computadoras o internet.
+- **Duración ajustada:** **${v.minJuegoTotal} minutos** (${v.minRonda1} min + ${v.minRonda2} min + ${v.minRonda3} min).
+- **Materiales:** Pizarrón/proyector (${restricciones}) y tarjetas de papel o registro en cuaderno. Cero requerimiento de computadoras o internet.
 
 ### 4. Puente con el concepto económico
 - Permite experimentar en vivo la analogía trabajada en el caso (*${p.analogia}*), logrando que los estudiantes descubran por sí mismos cómo el cambio en una variable altera el resultado general.
@@ -1013,7 +1182,7 @@ ${notaEtica}
 
 ### 6. Riesgos didácticos y cómo prevenirlos
 - **Riesgo:** Que el entusiasmo por la dinámica consuma los minutos finales y quede sin hacer la bajada conceptual en la carpeta.
-- **Prevención:** Cortar la actividad estrictamente 10 minutos antes del timbre para que cada estudiante anote en su carpeta las 3 conclusiones del pizarrón.
+- **Prevención:** Cortar la actividad estrictamente **${v.minCortePrevencion} minutos** antes del cierre para que cada estudiante anote en su carpeta las conclusiones del pizarrón.
 
 ---
 
@@ -1030,6 +1199,7 @@ const API_GENERADOR = {
   UNIDADES_Y_TEMAS,
   BANCO_CURRICULAR,
   seleccionarPlantilla,
+  analizarYValidarPedido,
   crearSlug,
   obtenerFechaHoy,
   generarPedagogo,
